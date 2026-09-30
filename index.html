@@ -462,13 +462,48 @@
                             <select id="cust-jersey-select" class="form-input-dark"></select>
                         </div>
 
+                        <!-- Selector de Modalidad de Personalización -->
+                        <div class="form-field-group">
+                            <label>Modalidad de Estampado:</label>
+                            <div class="customizer-mode-grid" id="cust-mode-pills">
+                                <button type="button" class="cust-mode-pill active" data-mode="full" onclick="setCustomizerMode('full')">
+                                    <span class="mode-pill-title">Nombre + Dorsal</span>
+                                    <span class="mode-pill-sub">Completo (+$120 MXN)</span>
+                                </button>
+                                <button type="button" class="cust-mode-pill" data-mode="number-only" onclick="setCustomizerMode('number-only')">
+                                    <span class="mode-pill-title">Solo Dorsal</span>
+                                    <span class="mode-pill-sub">Sin nombre (+$70 MXN)</span>
+                                </button>
+                                <button type="button" class="cust-mode-pill" data-mode="name-only" onclick="setCustomizerMode('name-only')">
+                                    <span class="mode-pill-title">Solo Nombre</span>
+                                    <span class="mode-pill-sub">Sin dorsal (+$70 MXN)</span>
+                                </button>
+                                <button type="button" class="cust-mode-pill" data-mode="plain" onclick="setCustomizerMode('plain')">
+                                    <span class="mode-pill-title">Camiseta Lisa</span>
+                                    <span class="mode-pill-sub">Sin estampado (+$0 MXN)</span>
+                                </button>
+                            </div>
+                        </div>
+
                         <div class="two-col-inputs">
-                            <div class="form-field-group">
-                                <label for="cust-name-input">Nombre en la Espalda:</label>
+                            <div class="form-field-group" id="group-cust-name">
+                                <div class="label-with-toggle">
+                                    <label for="cust-name-input">Nombre en la Espalda:</label>
+                                    <label class="checkbox-inline-label" title="Marcar para no poner nombre">
+                                        <input type="checkbox" id="cust-no-name-chk" onchange="toggleCustomizerCheckbox('name', this.checked)">
+                                        <span>Sin nombre</span>
+                                    </label>
+                                </div>
                                 <input type="text" id="cust-name-input" class="form-input-dark" placeholder="Ej: ZIDANE, MESSI o TU APELLIDO" maxlength="14" value="ZIDANE">
                             </div>
-                            <div class="form-field-group">
-                                <label for="cust-number-input">Dorsal / Número:</label>
+                            <div class="form-field-group" id="group-cust-number">
+                                <div class="label-with-toggle">
+                                    <label for="cust-number-input">Dorsal / Número:</label>
+                                    <label class="checkbox-inline-label" title="Marcar para no poner número">
+                                        <input type="checkbox" id="cust-no-number-chk" onchange="toggleCustomizerCheckbox('number', this.checked)">
+                                        <span>Sin dorsal</span>
+                                    </label>
+                                </div>
                                 <input type="text" id="cust-number-input" class="form-input-dark" placeholder="Ej: 5" maxlength="2" value="5">
                             </div>
                         </div>
@@ -488,10 +523,30 @@
                                 <label for="cust-patch-select">Parche en Manga:</label>
                                 <select id="cust-patch-select" class="form-input-dark">
                                     <option value="Sin parches adicionales">Sin parche</option>
-                                    <option value="Champions League Starball + Respect" selected>Champions League Starball</option>
-                                    <option value="Copa del Mundo Campeón FIFA">Mundial Campeón FIFA</option>
-                                    <option value="Parche de Liga Nacional">Parche Liga</option>
+                                    <option value="Champions League Starball + Respect" selected>Champions League Starball (+ $80)</option>
+                                    <option value="Copa del Mundo Campeón FIFA">Mundial Campeón FIFA (+ $80)</option>
+                                    <option value="Parche de Liga Nacional">Parche Liga (+ $50)</option>
                                 </select>
+                            </div>
+                        </div>
+
+                        <!-- Resumen dinámico de precios -->
+                        <div class="customizer-price-summary">
+                            <div class="cust-summary-row">
+                                <span>Camiseta seleccionada:</span>
+                                <span id="cust-base-price" style="font-weight: 700; color: #0a0a0a;">$1,499 MXN</span>
+                            </div>
+                            <div class="cust-summary-row">
+                                <span>Personalización:</span>
+                                <span id="cust-fee-display" class="cust-fee-badge">+$120 MXN (Completo)</span>
+                            </div>
+                            <div class="cust-summary-row" id="cust-patch-row">
+                                <span>Parche en manga:</span>
+                                <span id="cust-patch-fee-display" style="font-weight: 700; color: #0a0a0a;">+$80 MXN</span>
+                            </div>
+                            <div class="cust-summary-total">
+                                <span>Precio Total:</span>
+                                <span id="cust-total-price" style="color: #000000; font-size: 1.15rem; font-weight: 900;">$1,699 MXN</span>
                             </div>
                         </div>
 
@@ -502,7 +557,7 @@
                                     <circle cx="20" cy="21" r="1"></circle>
                                     <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
                                 </svg>
-                                Agregar Camiseta Personalizada al Carrito
+                                <span id="cust-btn-text">Agregar Camiseta Personalizada al Carrito</span>
                             </button>
                         </div>
                     </div>
@@ -515,6 +570,7 @@
                                 <img id="preview-jersey-img" src="imagenes/camisetas/real-madrid-retro.jpg" alt="Fondo camiseta" class="fabric-texture-layer">
                                 <div id="preview-player-name" class="print-player-name">ZIDANE</div>
                                 <div id="preview-player-number" class="print-player-number">5</div>
+                                <div id="preview-plain-indicator" class="print-plain-indicator" style="display: none;">EDICIÓN LISA • SIN ESTAMPADO</div>
                                 <div id="preview-patch-badge" class="print-patch-badge">Champions League Starball</div>
                                 <div class="holo-sheen-glare"></div>
                             </div>

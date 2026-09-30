@@ -1155,8 +1155,14 @@ function updateCartUI() {
                 </div>
                 <div class="cart-item-specs-pills">
                     <span class="pill-size-tag">Talla: <strong>${item.size}</strong></span>
-                    ${item.customName || item.customNumber ? `
-                        <span class="pill-custom-tag">⚽ #${item.customNumber || 'S/N'} ${item.customName || ''}</span>
+                    ${item.customName && item.customNumber ? `
+                        <span class="pill-custom-tag">⚽ #${item.customNumber} ${item.customName}</span>
+                    ` : item.customNumber ? `
+                        <span class="pill-custom-tag">⚽ Dorsal #${item.customNumber}</span>
+                    ` : item.customName ? `
+                        <span class="pill-custom-tag">⚽ Nombre: ${item.customName}</span>
+                    ` : (item.name && item.name.includes('Lisa')) ? `
+                        <span class="pill-custom-tag" style="background:#f1f5f9;color:#475569;border-color:#cbd5e1;">✨ Lisa (Sin estampado)</span>
                     ` : ''}
                     ${item.patch && item.patch !== 'Sin parches adicionales' ? `
                         <span class="pill-patch-tag">🏆 ${item.patch}</span>
@@ -1248,8 +1254,14 @@ function submitOrderToWhatsApp(event) {
 
     let itemsList = AppState.cart.map((item, index) => {
         let text = `${index + 1}. *${item.name}*\n   - Talla: ${item.size} | Cantidad: ${item.quantity} | $${(item.price * item.quantity).toLocaleString()} MXN`;
-        if (item.customName || item.customNumber) {
-            text += `\n   - Estampado: Dorsal #${item.customNumber || 'S/N'} - Nombre: ${item.customName || 'Sin nombre'}`;
+        if (item.customName && item.customNumber) {
+            text += `\n   - Estampado: Dorsal #${item.customNumber} | Nombre: ${item.customName}`;
+        } else if (item.customNumber && !item.customName) {
+            text += `\n   - Estampado: Solo Dorsal #${item.customNumber} (Sin nombre en espalda)`;
+        } else if (item.customName && !item.customNumber) {
+            text += `\n   - Estampado: Solo Nombre: ${item.customName} (Sin dorsal)`;
+        } else if (item.name && item.name.includes('Lisa')) {
+            text += `\n   - Estampado: Versión Lisa Original (Sin dorsal ni nombre)`;
         }
         if (item.patch && item.patch !== 'Sin parches adicionales') {
             text += `\n   - Parches: ${item.patch}`;
@@ -1288,6 +1300,232 @@ function submitOrderToWhatsApp(event) {
 // ==========================================
 // ESTUDIO DE PERSONALIZACIÓN DINÁMICO
 // ==========================================
+let currentCustomizerMode = 'full'; // 'full' | 'number-only' | 'name-only' | 'plain'
+
+function setCustomizerMode(mode) {
+    currentCustomizerMode = mode;
+
+    const nameInput = document.getElementById('cust-name-input');
+    const numberInput = document.getElementById('cust-number-input');
+    const noNameChk = document.getElementById('cust-no-name-chk');
+    const noNumberChk = document.getElementById('cust-no-number-chk');
+
+    // Actualizar botones de modo
+    const pills = document.querySelectorAll('.cust-mode-pill');
+    pills.forEach(pill => {
+        if (pill.dataset.mode === mode) {
+            pill.classList.add('active');
+        } else {
+            pill.classList.remove('active');
+        }
+    });
+
+    if (mode === 'full') {
+        if (nameInput) {
+            nameInput.disabled = false;
+            if (!nameInput.value.trim()) nameInput.value = 'ZIDANE';
+        }
+        if (numberInput) {
+            numberInput.disabled = false;
+            if (!numberInput.value.trim()) numberInput.value = '5';
+        }
+        if (noNameChk) noNameChk.checked = false;
+        if (noNumberChk) noNumberChk.checked = false;
+    } else if (mode === 'number-only') {
+        if (nameInput) nameInput.disabled = true;
+        if (numberInput) {
+            numberInput.disabled = false;
+            if (!numberInput.value.trim()) numberInput.value = '10';
+        }
+        if (noNameChk) noNameChk.checked = true;
+        if (noNumberChk) noNumberChk.checked = false;
+    } else if (mode === 'name-only') {
+        if (nameInput) {
+            nameInput.disabled = false;
+            if (!nameInput.value.trim()) nameInput.value = 'MESSI';
+        }
+        if (numberInput) numberInput.disabled = true;
+        if (noNameChk) noNameChk.checked = false;
+        if (noNumberChk) noNumberChk.checked = true;
+    } else if (mode === 'plain') {
+        if (nameInput) nameInput.disabled = true;
+        if (numberInput) numberInput.disabled = true;
+        if (noNameChk) noNameChk.checked = true;
+        if (noNumberChk) noNumberChk.checked = true;
+    }
+
+    updateCustomizerPreview();
+}
+
+function toggleCustomizerCheckbox(field, isChecked) {
+    const noNameChk = document.getElementById('cust-no-name-chk');
+    const noNumberChk = document.getElementById('cust-no-number-chk');
+    const nameInput = document.getElementById('cust-name-input');
+    const numberInput = document.getElementById('cust-number-input');
+
+    const noName = noNameChk ? noNameChk.checked : false;
+    const noNumber = noNumberChk ? noNumberChk.checked : false;
+
+    if (nameInput) nameInput.disabled = noName;
+    if (numberInput) numberInput.disabled = noNumber;
+
+    let targetMode = 'full';
+    if (noName && noNumber) {
+        targetMode = 'plain';
+    } else if (noName && !noNumber) {
+        targetMode = 'number-only';
+    } else if (!noName && noNumber) {
+        targetMode = 'name-only';
+    } else {
+        targetMode = 'full';
+    }
+
+    currentCustomizerMode = targetMode;
+
+    const pills = document.querySelectorAll('.cust-mode-pill');
+    pills.forEach(pill => {
+        if (pill.dataset.mode === targetMode) {
+            pill.classList.add('active');
+        } else {
+            pill.classList.remove('active');
+        }
+    });
+
+    updateCustomizerPreview();
+}
+
+function updateCustomizerPreview() {
+    const jerseySelect = document.getElementById('cust-jersey-select');
+    const nameInput = document.getElementById('cust-name-input');
+    const numberInput = document.getElementById('cust-number-input');
+    const patchSelect = document.getElementById('cust-patch-select');
+    const noNameChk = document.getElementById('cust-no-name-chk');
+    const noNumberChk = document.getElementById('cust-no-number-chk');
+
+    if (!jerseySelect) return;
+
+    const product = PRODUCTS.find(p => p.id === jerseySelect.value) || PRODUCTS[0];
+    const isNoName = noNameChk ? noNameChk.checked : false;
+    const isNoNumber = noNumberChk ? noNumberChk.checked : false;
+
+    const rawName = nameInput ? nameInput.value.trim().toUpperCase() : '';
+    const rawNumber = numberInput ? numberInput.value.trim() : '';
+
+    const nameVal = isNoName ? '' : rawName;
+    const numVal = isNoNumber ? '' : rawNumber;
+    const patchVal = patchSelect ? patchSelect.value : 'Sin parches adicionales';
+
+    const previewName = document.getElementById('preview-player-name');
+    const previewNumber = document.getElementById('preview-player-number');
+    const previewPlain = document.getElementById('preview-plain-indicator');
+    const previewJerseyImg = document.getElementById('preview-jersey-img');
+    const previewTeamTitle = document.getElementById('preview-team-title');
+    const previewPatchBadge = document.getElementById('preview-patch-badge');
+    const canvasBack = document.querySelector('.jersey-back-canvas');
+
+    // Nombre en espalda
+    if (previewName) {
+        if (isNoName || !nameVal) {
+            previewName.textContent = '';
+            previewName.style.display = 'none';
+        } else {
+            previewName.textContent = nameVal;
+            previewName.style.display = 'block';
+        }
+    }
+
+    // Número / dorsal
+    if (previewNumber) {
+        if (isNoNumber || !numVal) {
+            previewNumber.textContent = '';
+            previewNumber.style.display = 'none';
+        } else {
+            previewNumber.textContent = numVal;
+            previewNumber.style.display = 'block';
+        }
+    }
+
+    // Indicador edición lisa
+    if (previewPlain) {
+        if (isNoName && isNoNumber) {
+            previewPlain.style.display = 'block';
+        } else {
+            previewPlain.style.display = 'none';
+        }
+    }
+
+    if (previewJerseyImg) previewJerseyImg.src = product.image;
+    if (previewTeamTitle) previewTeamTitle.textContent = `${product.name} (${product.era})`;
+    if (previewPatchBadge) {
+        if (patchVal === 'Sin parches adicionales') {
+            previewPatchBadge.style.display = 'none';
+        } else {
+            previewPatchBadge.style.display = 'block';
+            previewPatchBadge.textContent = patchVal.replace(' (+ $80)', '').replace(' (+ $50)', '');
+        }
+    }
+
+    if (canvasBack && product.theme) {
+        canvasBack.style.background = product.theme.bg;
+        if (previewName) previewName.style.color = product.theme.color;
+        if (previewNumber) previewNumber.style.color = product.theme.numColor;
+    }
+
+    // Cálculo de suplementos y desglose
+    let custFee = 0;
+    let feeLabel = '+$0 MXN (Lisa)';
+    if (!isNoName && !isNoNumber) {
+        custFee = 120;
+        feeLabel = '+$120 MXN (Completo)';
+    } else if (!isNoName && isNoNumber) {
+        custFee = 70;
+        feeLabel = '+$70 MXN (Solo Nombre)';
+    } else if (isNoName && !isNoNumber) {
+        custFee = 70;
+        feeLabel = '+$70 MXN (Solo Dorsal)';
+    } else {
+        custFee = 0;
+        feeLabel = '+$0 MXN (Sin estampado)';
+    }
+
+    let patchFee = 0;
+    if (patchVal.includes('Champions') || patchVal.includes('Mundial')) patchFee = 80;
+    else if (patchVal.includes('Liga')) patchFee = 50;
+
+    const basePriceEl = document.getElementById('cust-base-price');
+    const feeDisplayEl = document.getElementById('cust-fee-display');
+    const patchRowEl = document.getElementById('cust-patch-row');
+    const patchFeeEl = document.getElementById('cust-patch-fee-display');
+    const totalPriceEl = document.getElementById('cust-total-price');
+    const btnTextEl = document.getElementById('cust-btn-text');
+
+    const totalJerseyPrice = product.price + custFee + patchFee;
+
+    if (basePriceEl) basePriceEl.textContent = `$${product.price.toLocaleString()} MXN`;
+    if (feeDisplayEl) feeDisplayEl.textContent = feeLabel;
+    if (patchRowEl) {
+        if (patchFee > 0) {
+            patchRowEl.style.display = 'flex';
+            if (patchFeeEl) patchFeeEl.textContent = `+$${patchFee} MXN`;
+        } else {
+            patchRowEl.style.display = 'none';
+        }
+    }
+    if (totalPriceEl) totalPriceEl.textContent = `$${totalJerseyPrice.toLocaleString()} MXN`;
+
+    if (btnTextEl) {
+        if (isNoName && isNoNumber) {
+            btnTextEl.textContent = `Agregar Camiseta Lisa al Carrito ($${totalJerseyPrice.toLocaleString()} MXN)`;
+        } else if (!isNoName && isNoNumber) {
+            btnTextEl.textContent = `Agregar Camiseta (Solo Nombre) ($${totalJerseyPrice.toLocaleString()} MXN)`;
+        } else if (isNoName && !isNoNumber) {
+            btnTextEl.textContent = `Agregar Camiseta (Solo Dorsal) ($${totalJerseyPrice.toLocaleString()} MXN)`;
+        } else {
+            btnTextEl.textContent = `Agregar Camiseta Personalizada ($${totalJerseyPrice.toLocaleString()} MXN)`;
+        }
+    }
+}
+
 function setupCustomizerLivePreview() {
     const jerseySelect = document.getElementById('cust-jersey-select');
     const nameInput = document.getElementById('cust-name-input');
@@ -1297,41 +1535,15 @@ function setupCustomizerLivePreview() {
     if (!jerseySelect || !nameInput || !numberInput) return;
 
     jerseySelect.innerHTML = PRODUCTS.map(p => `
-        <option value="${p.id}">${p.name} - $${p.price} MXN (${p.isRetro ? 'Retro' : 'Nueva'})</option>
+        <option value="${p.id}">${p.name} - $${p.price.toLocaleString()} MXN (${p.isRetro ? 'Retro' : 'Nueva'})</option>
     `).join('');
 
-    const updatePreview = () => {
-        const product = PRODUCTS.find(p => p.id === jerseySelect.value) || PRODUCTS[0];
-        const nameVal = nameInput.value.trim().toUpperCase() || 'TU NOMBRE';
-        const numVal = numberInput.value.trim() || '10';
-        const patchVal = patchSelect ? patchSelect.value : 'Sin parche';
+    jerseySelect.addEventListener('change', updateCustomizerPreview);
+    nameInput.addEventListener('input', updateCustomizerPreview);
+    numberInput.addEventListener('input', updateCustomizerPreview);
+    if (patchSelect) patchSelect.addEventListener('change', updateCustomizerPreview);
 
-        const previewName = document.getElementById('preview-player-name');
-        const previewNumber = document.getElementById('preview-player-number');
-        const previewJerseyImg = document.getElementById('preview-jersey-img');
-        const previewTeamTitle = document.getElementById('preview-team-title');
-        const previewPatchBadge = document.getElementById('preview-patch-badge');
-        const canvasBack = document.querySelector('.jersey-back-canvas');
-
-        if (previewName) previewName.textContent = nameVal;
-        if (previewNumber) previewNumber.textContent = numVal;
-        if (previewJerseyImg) previewJerseyImg.src = product.image;
-        if (previewTeamTitle) previewTeamTitle.textContent = `${product.name} (${product.era})`;
-        if (previewPatchBadge) previewPatchBadge.textContent = patchVal === 'Sin parches adicionales' ? 'Sin parche' : patchVal;
-
-        if (canvasBack && product.theme) {
-            canvasBack.style.background = product.theme.bg;
-            if (previewName) previewName.style.color = product.theme.color;
-            if (previewNumber) previewNumber.style.color = product.theme.numColor;
-        }
-    };
-
-    jerseySelect.addEventListener('change', updatePreview);
-    nameInput.addEventListener('input', updatePreview);
-    numberInput.addEventListener('input', updatePreview);
-    if (patchSelect) patchSelect.addEventListener('change', updatePreview);
-
-    updatePreview();
+    updateCustomizerPreview();
 }
 
 function addCustomizedJerseyToCart() {
@@ -1340,24 +1552,51 @@ function addCustomizedJerseyToCart() {
     const numberInput = document.getElementById('cust-number-input');
     const sizeSelect = document.getElementById('cust-size-select');
     const patchSelect = document.getElementById('cust-patch-select');
+    const noNameChk = document.getElementById('cust-no-name-chk');
+    const noNumberChk = document.getElementById('cust-no-number-chk');
 
     if (!jerseySelect) return;
 
     const product = PRODUCTS.find(p => p.id === jerseySelect.value);
     if (!product) return;
 
-    const name = nameInput ? nameInput.value.trim().toUpperCase() : '';
-    const number = numberInput ? numberInput.value.trim() : '';
+    const isNoName = noNameChk ? noNameChk.checked : false;
+    const isNoNumber = noNumberChk ? noNumberChk.checked : false;
+
+    const name = isNoName ? '' : (nameInput ? nameInput.value.trim().toUpperCase() : '');
+    const number = isNoNumber ? '' : (numberInput ? numberInput.value.trim() : '');
     const size = sizeSelect ? sizeSelect.value : 'L';
     const patch = patchSelect ? patchSelect.value : 'Sin parches adicionales';
 
-    const customizationFee = (name || number) ? 120 : 0;
+    let customizationFee = 0;
+    let itemTitleSuffix = '';
+    let toastMessage = '';
+
+    if (!isNoName && !isNoNumber) {
+        customizationFee = 120;
+        itemTitleSuffix = `[Personalizada #${number || '10'} ${name || 'OFICIAL'}]`;
+        toastMessage = `¡Camiseta personalizada #${number || '10'} ${name || 'OFICIAL'} añadida!`;
+    } else if (isNoName && !isNoNumber) {
+        customizationFee = 70;
+        itemTitleSuffix = `[Solo Dorsal #${number || '10'}]`;
+        toastMessage = `¡Camiseta con dorsal #${number || '10'} (sin nombre) añadida!`;
+    } else if (!isNoName && isNoNumber) {
+        customizationFee = 70;
+        itemTitleSuffix = `[Solo Nombre ${name || 'OFICIAL'}]`;
+        toastMessage = `¡Camiseta con nombre ${name || 'OFICIAL'} (sin dorsal) añadida!`;
+    } else {
+        customizationFee = 0;
+        itemTitleSuffix = `[Lisa Original]`;
+        toastMessage = `¡Camiseta lisa original (sin estampado) añadida!`;
+    }
+
     let patchFee = 0;
     if (patch.includes('Champions') || patch.includes('Mundial')) patchFee = 80;
+    else if (patch.includes('Liga')) patchFee = 50;
 
     addToCart({
         id: product.id,
-        name: `${product.name} [Dorsal Oficial]`,
+        name: `${product.name} ${itemTitleSuffix}`,
         price: product.price + customizationFee + patchFee,
         image: product.image,
         size: size,
@@ -1368,7 +1607,7 @@ function addCustomizedJerseyToCart() {
         patch: patch
     });
 
-    showToast(`¡Camiseta personalizada #${number} ${name} añadida!`);
+    showToast(toastMessage);
 }
 
 // ==========================================
