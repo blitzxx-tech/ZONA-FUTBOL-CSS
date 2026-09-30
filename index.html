@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zona Fútbol | Tienda Oficial de Camisetas de Fútbol (Retro & Nuevas)</title>
+    <meta name="description" content="Zona Fútbol: Tienda de camisetas de fútbol oficiales, réplicas históricas de época y equipaciones de la nueva temporada 2024/2025. Personalización de dorsal oficial y parches.">
+    <link rel="icon" type="image/svg+xml" href="logo_zona_futbol.svg">
+    
+    <!-- Fuentes Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@600;700;800;900&family=Teko:wght@600;700&display=swap" rel="stylesheet">
+    
+    <!-- Hoja de Estilos de Élite -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Canvas de Confetti para Celebraciones -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- Barra Superior: Cuenta Regresiva de Oferta Relámpago & Beneficios -->
+    <aside class="top-ticker" aria-label="Aviso comercial">
+        <div class="container ticker-flex">
+            <div class="ticker-left">
+                <span class="ticker-pill-live">ENVÍOS EXPRESS</span>
+                <span>Entrega asegurada y rastreada a todo el país. Envío sin costo desde <strong>$999 MXN</strong>.</span>
+            </div>
+            <div class="ticker-countdown">
+                <span>CÓDIGO DE TEMPORADA:</span>
+                <span class="promo-code-chip" onclick="applySpecialPenaltyCoupon()" title="Copiar cupón">RETRO2026</span>
+                <span class="timer-wrap">
+                    <span class="timer-val" id="timer-hours">14</span>h :
+                    <span class="timer-val" id="timer-mins">42</span>m :
+                    <span class="timer-val" id="timer-secs">18</span>s
+                </span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Encabezado Principal y Barra de Navegación -->
+    <header class="main-header">
+        <div class="container header-container">
+            <a href="#inicio" class="brand-link" title="Zona Fútbol - Inicio">
+                <img src="logo_zona_futbol.svg" alt="Escudo Zona Fútbol" class="brand-shield" style="width: 48px; height: 48px; object-fit: contain;">
+                <div class="brand-info">
+                    <h1>ZONA <span class="accent-text">FÚTBOL</span></h1>
+                    <p>Official Archive & Season Kits</p>
+                </div>
+            </a>
+
+            <!-- Menú de Navegación -->
+            <nav class="main-nav-bar" aria-label="Navegación principal">
+                <ul class="nav-menu">
+                    <li><a href="#inicio" class="nav-link active">INICIO</a></li>
+                    <li><a href="#catalogo" class="nav-link">CATÁLOGO</a></li>
+                    <li><a href="#catalogo" class="nav-link" onclick="setTimeout(() => { const b = document.querySelector('.filter-tab-btn[data-filter=\'nuevas\']'); if(b) b.click(); }, 100);">JERSEYS 24/25</a></li>
+                    <li><a href="#catalogo" class="nav-link" onclick="setTimeout(() => { const b = document.querySelector('.filter-tab-btn[data-filter=\'retro\']'); if(b) b.click(); }, 100);">RETRO ARCHIVE</a></li>
+                    <li><a href="#personalizador" class="nav-link">CUSTOM LAB</a></li>
+                    <li><a href="#guia-tallas" class="nav-link">TALLAS</a></li>
+                    <li><a href="#faq" class="nav-link">SOPORTE</a></li>
+                </ul>
+            </nav>
+
+            <!-- Acciones de Cabecera -->
+            <div class="header-actions">
+                <!-- Selector Moneda -->
+                <span class="currency-tag">MXN ($)</span>
+
+                <!-- Botón Búsqueda Rápida -->
+                <button class="icon-action-btn" onclick="document.getElementById('search-input')?.focus(); location.href='#catalogo';" title="Buscar en catálogo" aria-label="Buscar">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </button>
+
+                <!-- Botón Toggle de Sonido (Efectos de Estadio) -->
+                <button class="icon-action-btn" id="sound-toggle-btn" onclick="toggleStoreAudio()" title="Efectos de Sonido" aria-label="Sonido">
+                    <span id="sound-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                        </svg>
+                    </span>
+                </button>
+
+                <!-- Botón Favoritos -->
+                <button class="icon-action-btn" onclick="openFavoritesModal()" title="Mis Favoritos" aria-label="Favoritos">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    </svg>
+                    <span class="badge-counter fav-badge-count" style="display: none;">0</span>
+                </button>
+
+                <!-- Botón Carrito con Contador y Destino de Vuelo -->
+                <button class="cart-cta-btn" id="header-cart-btn" onclick="openCartDrawer()" title="Ver Cesta de Compras" aria-label="Cesta">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="9" cy="21" r="1"></circle>
+                        <circle cx="20" cy="21" r="1"></circle>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                    </svg>
+                    <span>Cesta</span>
+                    <span class="badge-counter cart-badge-count" style="display: none;">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- SECCIÓN HERO CON AMBIENTE DE ESTADIO NOCTURNO Y PARTÍCULAS -->
+        <section id="inicio" class="hero-stadium">
+            <canvas id="hero-particles-canvas"></canvas>
+            <div class="container hero-grid">
+                <div class="hero-text-content">
+                    <div class="hero-pill-badge">
+                        <span class="hero-status-dot"></span>
+                        <span class="ultra-tech-tag">[THE HOME OF FOOTBALL CULTURE // ARCHIVO OFICIAL 2024/25]</span>
+                    </div>
+                    <h2 class="hero-title">
+                        EL SANTUARIO DE LAS <span class="hero-highlight-accent">EQUIPACIONES DE ÉLITE</span>
+                    </h2>
+                    <p class="hero-subtitle">
+                        Distribución de equipaciones oficiales de la temporada 2024/25 y archivo histórico de leyenda. Tejido jacquard de competición, dorsales oficiales de club y personalización exacta de época.
+                    </p>
+                    <div class="hero-btns-row">
+                        <a href="#catalogo" class="btn btn-primary">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="14" width="7" height="7"></rect>
+                                <rect x="3" y="14" width="7" height="7"></rect>
+                            </svg>
+                            Explorar Catálogo
+                        </a>
+                        <a href="#personalizador" class="btn btn-outline-white">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 20h9"></path>
+                                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                            </svg>
+                            Personalizar Dorsal
+                        </a>
+                    </div>
+                    <div class="hero-stats-row">
+                        <div class="stat-box">
+                            <h4>100%</h4>
+                            <p>Especificación de Partido</p>
+                        </div>
+                        <div class="stat-box">
+                            <h4>+1,850</h4>
+                            <p>Coleccionistas Satisfechos</p>
+                        </div>
+                        <div class="stat-box">
+                            <h4>24-48h</h4>
+                            <p>Despacho Express Rastreado</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Espacio reservado en el Hero (para futuro contenido visual) -->
+                <div class="hero-showcase-space" id="hero-custom-space" aria-label="Espacio reservado"></div>
+            </div>
+        </section>
+
+        <!-- TIRA DE MARCAS TÉCNICAS Y SPONSORS OFICIALES (ESTILO ULTRA FOOTBALL) -->
+        <section class="ultra-brands-strip" aria-label="Marcas y Proveedores Técnicos Oficiales">
+            <div class="container brands-strip-flex">
+                <div class="brands-marquee-wrap">
+                    <div class="brands-marquee-track">
+                        <div class="brand-item">
+                            <span class="brand-name">NIKE FOOTBALL</span>
+                            <span class="brand-dot">•</span>
+                        </div>
+                        <div class="brand-item">
+                            <span class="brand-name">ADIDAS PERFORMANCE</span>
+                            <span class="brand-dot">•</span>
+                        </div>
+                        <div class="brand-item">
+                            <span class="brand-name">PUMA FOOTBALL</span>
+                            <span class="brand-dot">•</span>
+                        </div>
+                        <div class="brand-item">
+                            <span class="brand-name">MIZUNO MORELIA</span>
+                            <span class="brand-dot">•</span>
+                        </div>
+                        <div class="brand-item">
+                            <span class="brand-name">UMBRO HERITAGE</span>
+                            <span class="brand-dot">•</span>
+                        </div>
+                        <div class="brand-item">
+                            <span class="brand-name">KAPPA KONTROLL</span>
+                            <span class="brand-dot">•</span>
+                        </div>
+                        <div class="brand-item">
+                            <span class="brand-name">CASTORE PRO SPEC</span>
+                            <span class="brand-dot">•</span>
+                        </div>
+                        <!-- Bucle Duplicado para Scroll Infinito Fluido -->
+                        <div class="brand-item">
+                            <span class="brand-name">NIKE FOOTBALL</span>
+                            <span class="brand-dot">•</span>
+                        </div>
+                        <div class="brand-item">
+                            <span class="brand-name">ADIDAS PERFORMANCE</span>
+                            <span class="brand-dot">•</span>
+                        </div>
+                        <div class="brand-item">
+                            <span class="brand-name">PUMA FOOTBALL</span>
+                            <span class="brand-dot">•</span>
+                        </div>
+                        <div class="brand-item">
+                            <span class="brand-name">MIZUNO MORELIA</span>
+                            <span class="brand-dot">•</span>
+                        </div>
+                        <div class="brand-item">
+                            <span class="brand-name">UMBRO HERITAGE</span>
+                            <span class="brand-dot">•</span>
+                        </div>
+                        <div class="brand-item">
+                            <span class="brand-name">KAPPA KONTROLL</span>
+                            <span class="brand-dot">•</span>
+                        </div>
+                        <div class="brand-item">
+                            <span class="brand-name">CASTORE PRO SPEC</span>
+                            <span class="brand-dot">•</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- COLECCIONES DESTACADAS EDITORIALES (SHOP BY CULTURE - ULTRA FOOTBALL STYLE) -->
+        <section class="ultra-culture-section">
+            <div class="container">
+                <div class="section-header-row">
+                    <div>
+                        <span class="ultra-tech-badge">[SHOP BY CULTURE // ARCHIVO 2024/25]</span>
+                        <h2 class="section-title-ultra">COLECCIONES DESTACADAS</h2>
+                    </div>
+                    <a href="#catalogo" class="ultra-view-all-link">
+                        <span>Ver Todo el Catálogo</span>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </a>
+                </div>
+
+                <div class="ultra-culture-grid">
+                    <!-- Tarjeta 1: Temporada 24/25 -->
+                    <div class="ultra-culture-card" onclick="location.href='#catalogo'; setTimeout(() => { const b = document.querySelector('.filter-tab-btn[data-filter=\'nuevas\']'); if(b) b.click(); }, 100);">
+                        <img src="imagenes/camisetas/real-madrid.jpg" alt="Equipaciones Nueva Temporada" class="culture-card-bg" loading="lazy">
+                        <div class="culture-card-overlay"></div>
+                        <div class="culture-card-content">
+                            <span class="culture-card-badge">NUEVA TEMPORADA 24/25</span>
+                            <h3 class="culture-card-title">EQUIPACIONES DE PARTIDO</h3>
+                            <p class="culture-card-desc">Los nuevos lanzamientos oficiales de LaLiga, Premier League, Serie A y Champions League.</p>
+                            <div class="culture-card-action">
+                                <span>Explorar Lanzamientos</span>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 2: Archivo Retro -->
+                    <div class="ultra-culture-card" onclick="location.href='#catalogo'; setTimeout(() => { const b = document.querySelector('.filter-tab-btn[data-filter=\'retro\']'); if(b) b.click(); }, 100);">
+                        <img src="imagenes/camisetas/real-madrid-retro.jpg" alt="Archivo Retro Histórico" class="culture-card-bg" loading="lazy">
+                        <div class="culture-card-overlay"></div>
+                        <div class="culture-card-content">
+                            <span class="culture-card-badge">ARCHIVO RETRO (1990 - 2006)</span>
+                            <h3 class="culture-card-title">LEYENDAS HISTÓRICAS</h3>
+                            <p class="culture-card-desc">Joyas icónicas: la volea de Zidane en Glasgow, el Centenario y camisetas doradas de colección.</p>
+                            <div class="culture-card-action">
+                                <span>Ver Archivo Retro</span>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 3: Ediciones Especiales & 125 Años -->
+                    <div class="ultra-culture-card" onclick="location.href='#catalogo'; setTimeout(() => { const b = document.querySelector('.filter-tab-btn[data-filter=\'todas\']'); if(b) b.click(); }, 100);">
+                        <img src="imagenes/camisetas/barcelona.jpg" alt="Ediciones Especiales de Coleccionista" class="culture-card-bg" loading="lazy">
+                        <div class="culture-card-overlay"></div>
+                        <div class="culture-card-content">
+                            <span class="culture-card-badge">COLECCIÓN ANIVERSARIO</span>
+                            <h3 class="culture-card-title">EDICIONES LIMITADAS</h3>
+                            <p class="culture-card-desc">125 Aniversario blaugrana, tejido Jacquard transpirable y parches conmemorativos de época.</p>
+                            <div class="culture-card-action">
+                                <span>Ver Ediciones Especiales</span>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 4: Laboratorio de Dorsales (The Lab) -->
+                    <div class="ultra-culture-card" onclick="location.href='#personalizador';">
+                        <img src="imagenes/camisetas/milan.jpg" alt="Laboratorio de Estampado de Dorsales" class="culture-card-bg" loading="lazy">
+                        <div class="culture-card-overlay"></div>
+                        <div class="culture-card-content">
+                            <span class="culture-card-badge highlight-volt">ULTRA CUSTOM LAB</span>
+                            <h3 class="culture-card-title">TALLER DE DORSALES</h3>
+                            <p class="culture-card-desc">Estampa oficial en vivo de tu apellido y número con tipografías auténticas de competición.</p>
+                            <div class="culture-card-action highlight-btn">
+                                <span>Entrar al Laboratorio</span>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- BARRA DE BENEFICIOS Y GARANTÍAS -->
+        <section class="benefits-section">
+            <div class="container">
+                <div class="benefits-grid">
+                    <div class="benefit-card">
+                        <div class="benefit-icon-wrapper">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                                <polyline points="9 12 11 14 15 10"></polyline>
+                            </svg>
+                        </div>
+                        <div class="benefit-details">
+                            <h4>Fidelidad Oficial 1:1</h4>
+                            <p>Tejido Jacquard transpirable, escudos termosellados y etiquetas de autenticidad.</p>
+                        </div>
+                    </div>
+                    <div class="benefit-card">
+                        <div class="benefit-icon-wrapper">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="1" y="3" width="15" height="13"></rect>
+                                <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+                                <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                                <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                            </svg>
+                        </div>
+                        <div class="benefit-details">
+                            <h4>Logística Rastreada</h4>
+                            <p>Envío sin costo a partir de $999 MXN con guía rastreable DHL/FedEx.</p>
+                        </div>
+                    </div>
+                    <div class="benefit-card">
+                        <div class="benefit-icon-wrapper">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 20h9"></path>
+                                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                            </svg>
+                        </div>
+                        <div class="benefit-details">
+                            <h4>Estampado de Dorsal</h4>
+                            <p>Tipografía oficial de época con números de jugador o apellido personalizado.</p>
+                        </div>
+                    </div>
+                    <div class="benefit-card">
+                        <div class="benefit-icon-wrapper">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="23 4 23 10 17 10"></polyline>
+                                <polyline points="1 20 1 14 7 14"></polyline>
+                                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                            </svg>
+                        </div>
+                        <div class="benefit-details">
+                            <h4>Garantía de Ajuste</h4>
+                            <p>Cambios de talla y atención personalizada en tiempo real por WhatsApp.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- SECCIÓN CATÁLOGO DE PRODUCTOS CON HOLOGRAFÍA FUT Y FLIP -->
+        <section id="catalogo" class="section-padding">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-tag">Catálogo Oficial</span>
+                    <h2 class="section-title">Colección de Equipaciones</h2>
+                    <p class="section-subtitle">
+                        Filtra entre el archivo histórico de leyendas mundiales y los lanzamientos oficiales de la temporada 2024/2025. Utiliza el selector de dorsal para inspeccionar la parte posterior.
+                    </p>
+                </div>
+
+                <!-- Barra de Herramientas de Catálogo (Filtros, Tabs y Búsqueda) -->
+                <div class="catalog-toolbar">
+                    <div class="filter-tabs" role="tablist">
+                        <button type="button" class="filter-tab-btn active" data-filter="todas">Todas</button>
+                        <button type="button" class="filter-tab-btn" data-filter="nuevas">Temporada 24/25</button>
+                        <button type="button" class="filter-tab-btn" data-filter="retro">Archivo Retro</button>
+                        <button type="button" class="filter-tab-btn" data-filter="europeos">Clubes Europeos</button>
+                        <button type="button" class="filter-tab-btn" data-filter="selecciones">Selecciones</button>
+                    </div>
+
+                    <div class="search-filters-row">
+                        <div class="search-wrapper">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                            <input type="text" id="search-input" class="search-input" placeholder="Buscar por equipo, jugador (Zidane, Messi...), año o liga...">
+                        </div>
+
+                        <div class="filters-dropdown-group">
+                            <select id="league-filter" class="custom-select" aria-label="Filtrar por Liga">
+                                <option value="all">Todas las Competiciones</option>
+                                <option value="laliga">LaLiga (España)</option>
+                                <option value="premier">Premier League (Inglaterra)</option>
+                                <option value="seriea">Serie A (Italia)</option>
+                                <option value="ligue1">Ligue 1 (Francia)</option>
+                                <option value="selecciones">Selecciones Nacionales</option>
+                                <option value="clasicos">Clásicos Sudamericanos</option>
+                            </select>
+
+                            <select id="sort-select" class="custom-select" aria-label="Ordenar Camisetas">
+                                <option value="destacados">⭐ Más Destacadas</option>
+                                <option value="precio-menor">💵 Menor Precio</option>
+                                <option value="precio-mayor">💎 Mayor Precio</option>
+                                <option value="calificacion">🔥 Mejor Calificadas</option>
+                                <option value="nombre">🔤 Nombre A-Z</option>
+                            </select>
+
+                            <span id="results-counter" style="font-size: 0.88rem; font-weight: 700; color: var(--text-muted-dark);">
+                                Cargando catálogo...
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grid Dinámico de Camisetas con Efecto 3D y Holograma -->
+                <div id="products-grid" class="products-grid"></div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN ESTUDIO DE PERSONALIZACIÓN DINÁMICO -->
+        <section id="personalizador" class="section-padding customizer-studio-section">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-tag">Estudio de Estampado Oficial</span>
+                    <h2 class="section-title">Personaliza Tu Camiseta en Vivo</h2>
+                    <p class="section-subtitle">
+                        Ingresa el nombre de tu ídolo o tu propio apellido y número. Mira cómo se adapta la espalda del jersey con los colores y tipografía del club en tiempo real.
+                    </p>
+                </div>
+
+                <div class="customizer-grid-2col">
+                    <!-- Formulario de Configuración -->
+                    <div class="customizer-panel-card">
+                        <h3>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2">
+                                <path d="M12 20h9"></path>
+                                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                            </svg>
+                            Configura Tu Estampado
+                        </h3>
+                        <p style="color: var(--text-muted-dark); font-size: 0.92rem; margin-bottom: 22px;">
+                            Vinil termosellado de alta densidad y acabado idéntico al de partido.
+                        </p>
+
+                        <div class="form-field-group">
+                            <label for="cust-jersey-select">Selecciona la Camiseta:</label>
+                            <select id="cust-jersey-select" class="form-input-dark"></select>
+                        </div>
+
+                        <div class="two-col-inputs">
+                            <div class="form-field-group">
+                                <label for="cust-name-input">Nombre en la Espalda:</label>
+                                <input type="text" id="cust-name-input" class="form-input-dark" placeholder="Ej: ZIDANE, MESSI o TU APELLIDO" maxlength="14" value="ZIDANE">
+                            </div>
+                            <div class="form-field-group">
+                                <label for="cust-number-input">Dorsal / Número:</label>
+                                <input type="text" id="cust-number-input" class="form-input-dark" placeholder="Ej: 5" maxlength="2" value="5">
+                            </div>
+                        </div>
+
+                        <div class="two-col-inputs">
+                            <div class="form-field-group">
+                                <label for="cust-size-select">Talla:</label>
+                                <select id="cust-size-select" class="form-input-dark">
+                                    <option value="S">Talla S (Chica)</option>
+                                    <option value="M">Talla M (Mediana - Recomendada)</option>
+                                    <option value="L" selected>Talla L (Grande)</option>
+                                    <option value="XL">Talla XL (Extra Grande)</option>
+                                    <option value="XXL">Talla XXL (Doble Extra)</option>
+                                </select>
+                            </div>
+                            <div class="form-field-group">
+                                <label for="cust-patch-select">Parche en Manga:</label>
+                                <select id="cust-patch-select" class="form-input-dark">
+                                    <option value="Sin parches adicionales">Sin parche</option>
+                                    <option value="Champions League Starball + Respect" selected>Champions League Starball</option>
+                                    <option value="Copa del Mundo Campeón FIFA">Mundial Campeón FIFA</option>
+                                    <option value="Parche de Liga Nacional">Parche Liga</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 15px;">
+                            <button type="button" class="btn btn-gold btn-lg" style="width: 100%;" onclick="addCustomizedJerseyToCart()">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="9" cy="21" r="1"></circle>
+                                    <circle cx="20" cy="21" r="1"></circle>
+                                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                                </svg>
+                                Agregar Camiseta Personalizada al Carrito
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Simulador Visual del Dorsal con Textura y Giro 3D -->
+                    <div class="customizer-preview-container">
+                        <div class="jersey-3d-stage" id="jersey-3d-stage">
+                            <div class="jersey-back-canvas" id="customizer-jersey-card">
+                                <div class="collar-seam"></div>
+                                <img id="preview-jersey-img" src="imagenes/camisetas/real-madrid-retro.jpg" alt="Fondo camiseta" class="fabric-texture-layer">
+                                <div id="preview-player-name" class="print-player-name">ZIDANE</div>
+                                <div id="preview-player-number" class="print-player-number">5</div>
+                                <div id="preview-patch-badge" class="print-patch-badge">Champions League Starball</div>
+                                <div class="holo-sheen-glare"></div>
+                            </div>
+                        </div>
+                        <div class="preview-jersey-caption">
+                            <h4 id="preview-team-title">Real Madrid 2001/2002 Retro</h4>
+                            <p>Previsualización 3D Interactiva con Perspectiva & Foil Reflectivo</p>
+                            <div class="customizer-3d-actions">
+                                <button type="button" class="btn-3d-pill" onclick="spinJersey3D()">
+                                    🔄 Giro 360° en 3D
+                                </button>
+                                <button type="button" class="btn-3d-pill" onclick="toggleJerseyFrontBack()">
+                                    🔁 Ver Frente / Espalda
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN GUÍA DE TALLAS & CALCULADOR RECOMENDADO -->
+        <section id="guia-tallas" class="section-padding">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-tag">Medidas Exactas</span>
+                    <h2 class="section-title">Guía de Tallas & Calculador Inteligente</h2>
+                    <p class="section-subtitle">
+                        Asegura el ajuste ideal para tu cuerpo. Te recomendamos medir una camiseta que ya tengas de axila a axila.
+                    </p>
+                </div>
+
+                <div class="size-guide-wrapper">
+                    <!-- Tabla de Tallas -->
+                    <div class="size-table-responsive">
+                        <table class="size-table-styled">
+                            <thead>
+                                <tr>
+                                    <th>Talla</th>
+                                    <th>Pecho (Axila a Axila)</th>
+                                    <th>Largo Total</th>
+                                    <th>Estatura Sugerida</th>
+                                    <th>Peso Sugerido</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>S</strong></td>
+                                    <td>50 - 52 cm</td>
+                                    <td>70 - 72 cm</td>
+                                    <td>1.60 - 1.70 m</td>
+                                    <td>55 - 65 kg</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>M</strong></td>
+                                    <td>53 - 55 cm</td>
+                                    <td>73 - 75 cm</td>
+                                    <td>1.70 - 1.78 m</td>
+                                    <td>65 - 75 kg</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>L</strong></td>
+                                    <td>56 - 58 cm</td>
+                                    <td>76 - 78 cm</td>
+                                    <td>1.78 - 1.84 m</td>
+                                    <td>75 - 85 kg</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>XL</strong></td>
+                                    <td>59 - 61 cm</td>
+                                    <td>79 - 81 cm</td>
+                                    <td>1.82 - 1.90 m</td>
+                                    <td>85 - 95 kg</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>XXL</strong></td>
+                                    <td>62 - 65 cm</td>
+                                    <td>82 - 84 cm</td>
+                                    <td>1.85 - 1.98 m</td>
+                                    <td>95 - 110 kg</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Calculador de Talla -->
+                    <div class="recommender-card">
+                        <h4>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="16" x2="12" y2="12"></line>
+                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                            </svg>
+                            Calculador Automático de Talla
+                        </h4>
+                        <div class="recommender-inputs-grid">
+                            <div>
+                                <label style="display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 6px; color: var(--text-muted-dark);">Tu Altura (cm):</label>
+                                <input type="number" id="size-calc-height" class="search-input" value="175" min="140" max="215">
+                            </div>
+                            <div>
+                                <label style="display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 6px; color: var(--text-muted-dark);">Tu Peso aproximado (kg):</label>
+                                <input type="number" id="size-calc-weight" class="search-input" value="75" min="40" max="150">
+                            </div>
+                            <div>
+                                <label style="display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 6px; color: var(--text-muted-dark);">Preferencia de Ajuste:</label>
+                                <div style="display: flex; gap: 12px; margin-top: 10px;">
+                                    <label style="font-weight: normal; font-size: 0.85rem;">
+                                        <input type="radio" name="fit-style" value="regular" checked> Regular / Atlético
+                                    </label>
+                                    <label style="font-weight: normal; font-size: 0.85rem;">
+                                        <input type="radio" name="fit-style" value="loose"> Holgado Retro
+                                    </label>
+                                </div>
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-primary" style="width: 100%;" onclick="calculateRecommendedSize()">
+                                    Calcular Mi Talla
+                                </button>
+                            </div>
+                        </div>
+                        <div id="size-calc-result" style="margin-top: 15px;"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN COMPARATIVA: VERSIÓN FAN VS VERSIÓN JUGADOR -->
+        <section id="comparativa" class="section-padding" style="background: var(--bg-alt-light);">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-tag">Conoce los Detalles</span>
+                    <h2 class="section-title">Versión Fan vs Versión Jugador (Player)</h2>
+                    <p class="section-subtitle">
+                        Elige la versión que mejor se adapte a tu estilo: comodidad diaria o especificación de partido profesional.
+                    </p>
+                </div>
+
+                <div class="comparison-container-grid">
+                    <!-- TARJETA VERSION FAN -->
+                    <div class="comparison-box is-selected" id="comp-box-fan" onclick="selectComparisonVersion('fan')">
+                        <div class="comparison-box-top-meta">
+                            <span class="version-select-pill" id="pill-fan">
+                                <span class="pill-dot">✓</span> <span class="pill-label">Versión Marcada</span>
+                            </span>
+                            <span class="version-badge-subtle">Más Popular</span>
+                        </div>
+                        <div class="comparison-header-row">
+                            <h3>Versión Fan / Estadio</h3>
+                            <p style="color: var(--text-muted-dark); font-size: 0.88rem;">Diseñada para el día a día y tribuna</p>
+                        </div>
+                        <ul class="comparison-check-list">
+                            <li><span class="check-icon-accent">✓</span> <strong>Corte Recto y Confortable:</strong> Caída estándar holgada ideal para vestir casualmente.</li>
+                            <li><span class="check-icon-accent">✓</span> <strong>Escudos y Logotipos Bordados:</strong> Mayor durabilidad tras múltiples lavados.</li>
+                            <li><span class="check-icon-accent">✓</span> <strong>Tejido Suave:</strong> Poliéster transpirable con tecnología Climalite / Dri-FIT estándar.</li>
+                            <li><span class="check-icon-accent">✓</span> <strong>Precio Accesible:</strong> Excelente relación calidad-precio para uso cotidiano.</li>
+                        </ul>
+                        <div class="comparison-select-action">
+                            <button type="button" class="btn-version-select" id="btn-select-fan" onclick="event.stopPropagation(); selectComparisonVersion('fan');">
+                                ✓ Versión Fan Marcada
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- TARJETA VERSION JUGADOR -->
+                    <div class="comparison-box" id="comp-box-player" onclick="selectComparisonVersion('player')">
+                        <div class="comparison-box-top-meta">
+                            <span class="version-select-pill" id="pill-player">
+                                <span class="pill-dot">○</span> <span class="pill-label">Clic para Marcar</span>
+                            </span>
+                            <span style="background: var(--accent); color: #ffffff; font-size: 0.72rem; font-weight: 800; padding: 3px 8px; border-radius: 4px; display: inline-block;">
+                                GAMA ALTA
+                            </span>
+                        </div>
+                        <div class="comparison-header-row">
+                            <h3>Versión Jugador (Player / Authentic)</h3>
+                            <p style="color: var(--text-muted-dark); font-size: 0.88rem;">La misma con la que saltan al campo de juego</p>
+                        </div>
+                        <ul class="comparison-check-list">
+                            <li><span class="check-icon-accent">✓</span> <strong>Corte Slim Fit Atlético:</strong> Ajuste más ceñido al cuerpo y hombros que estiliza la silueta.</li>
+                            <li><span class="check-icon-accent">✓</span> <strong>Escudos Termosellados en Relieve:</strong> Sin costuras interiores que rocen la piel. Ultra livianos.</li>
+                            <li><span class="check-icon-accent">✓</span> <strong>Tejidos Jacquard / HEAT.RDY / Dri-FIT ADV:</strong> Paneles microperforados de máxima ventilación.</li>
+                            <li><span class="check-icon-accent">✓</span> <strong>Detalles de Partido:</strong> Parches de autenticidad en el bajo y patrones de diseño dinámicos.</li>
+                        </ul>
+                        <div class="comparison-select-action">
+                            <button type="button" class="btn-version-select" id="btn-select-player" onclick="event.stopPropagation(); selectComparisonVersion('player');">
+                                Marcar Versión Jugador
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN TESTIMONIOS Y RESEÑAS -->
+        <section class="section-padding">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-tag">Opiniones Reales</span>
+                    <h2 class="section-title">Lo Que Dicen Nuestros Fanáticos</h2>
+                    <p class="section-subtitle">
+                        Más de 1,800 coleccionistas y futboleros satisfechos en todo el país.
+                    </p>
+                </div>
+
+                <div class="testimonials-row-grid">
+                    <div class="review-card">
+                        <div class="review-user-info">
+                            <div class="user-avatar-circle" style="background: #1e293b;">CR</div>
+                            <div class="user-names">
+                                <h4>Carlos R. M.</h4>
+                                <small><span class="verified-checkmark">✔ Comprador Verificado</span> • CDMX</small>
+                            </div>
+                        </div>
+                        <div class="review-stars">★★★★★</div>
+                        <p class="review-body-text">
+                            "Compré la camiseta retro del Real Madrid de la Novena de Zidane (2002). La calidad del tejido blanco y el bordado del Centenario es simplemente espectacular, idéntica a la época. Me llegó en solo 3 días."
+                        </p>
+                        <div class="review-item-tag">Compró: Real Madrid 2002 Retro (Centenario)</div>
+                    </div>
+
+                    <div class="review-card">
+                        <div class="review-user-info">
+                            <div class="user-avatar-circle" style="background: #0f766e;">AG</div>
+                            <div class="user-names">
+                                <h4>Alejandro Gómez</h4>
+                                <small><span class="verified-checkmark">✔ Comprador Verificado</span> • Guadalajara</small>
+                            </div>
+                        </div>
+                        <div class="review-stars">★★★★★</div>
+                        <p class="review-body-text">
+                            "La camiseta de México del 98 con el Calendario Azteca es una obra de arte. El sublimado viene perfecto y el cuello tipo polo se ve genial. La atención por WhatsApp para elegir mi talla fue rápida y cordial."
+                        </p>
+                        <div class="review-item-tag">Compró: México 1998 Retro (Calendario Azteca)</div>
+                    </div>
+
+                    <div class="review-card">
+                        <div class="review-user-info">
+                            <div class="user-avatar-circle" style="background: #b45309;">SL</div>
+                            <div class="user-names">
+                                <h4>Santiago Lozano</h4>
+                                <small><span class="verified-checkmark">✔ Comprador Verificado</span> • Monterrey</small>
+                            </div>
+                        </div>
+                        <div class="review-stars">★★★★★</div>
+                        <p class="review-body-text">
+                            "Pedí la nueva del Barça 125 Aniversario con el estampado de Lamine Yamal #19. El parche de LaLiga y los números oficiales lucen impecables. Sin duda volveré a comprar la retro de Maradona de Boca 81."
+                        </p>
+                        <div class="review-item-tag">Compró: FC Barcelona 24/25 125 Años (Lamine)</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN PREGUNTAS FRECUENTES (FAQ) -->
+        <section id="faq" class="section-padding" style="background: var(--bg-alt-light);">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-tag">Respuestas Claras</span>
+                    <h2 class="section-title">Preguntas Frecuentes (FAQ)</h2>
+                    <p class="section-subtitle">
+                        Todo lo que necesitas saber sobre nuestras camisetas, personalización, pagos y tiempos de entrega.
+                    </p>
+                </div>
+
+                <div class="faq-box-container">
+                    <div class="faq-single-item active">
+                        <button class="faq-trigger-btn">
+                            <span>¿Qué calidad tienen las camisetas retro y de nueva temporada?</span>
+                            <span class="faq-toggle-arrow">▼</span>
+                        </button>
+                        <div class="faq-content-answer">
+                            Manejamos réplicas oficiales de la más alta gama Triple A y versiones de importación Premium 1:1. 
+                            Cada camiseta cuenta con sus etiquetas correspondientes, telas técnicas transpirables (HEAT.RDY, Dri-FIT ADV), 
+                            escudos en relieve o bordados según la época y todos los detalles fidedignos de confección.
+                        </div>
+                    </div>
+
+                    <div class="faq-single-item">
+                        <button class="faq-trigger-btn">
+                            <span>¿Cómo elijo entre talla regular y una talla más para modelos retro?</span>
+                            <span class="faq-toggle-arrow">▼</span>
+                        </button>
+                        <div class="faq-content-answer">
+                            Si prefieres un calce cómodo o un estilo 'streetwear / oversize', te recomendamos ordenar una talla más en ediciones retro. 
+                            Para las camisetas de la temporada actual versión Fan, tu talla habitual te quedará a la perfección. 
+                            Consulta nuestra sección interactiva de medidas en centímetros para comprobar axila a axila.
+                        </div>
+                    </div>
+
+                    <div class="faq-single-item">
+                        <button class="faq-trigger-btn">
+                            <span>¿Puedo estampar cualquier nombre y número o solo de jugadores conocidos?</span>
+                            <span class="faq-toggle-arrow">▼</span>
+                        </button>
+                        <div class="faq-content-answer">
+                            ¡Totalmente libre! Puedes elegir los dorsales legendarios (ej: Zidane #5, Maradona #10, Ronaldo #9, Lamine Yamal #19) 
+                            o estampar tu propio apellido, apodo o fecha especial con la tipografía oficial del club o selección.
+                        </div>
+                    </div>
+
+                    <div class="faq-single-item">
+                        <button class="faq-trigger-btn">
+                            <span>¿Cuánto tardan los envíos y cómo recibo mi número de guía?</span>
+                            <span class="faq-toggle-arrow">▼</span>
+                        </button>
+                        <div class="faq-content-answer">
+                            Los pedidos listos se despachan en 24 a 48 horas hábiles por paqueterías líderes (Estafeta, DHL, FedEx). 
+                            El tiempo de entrega estimado es de 2 a 4 días hábiles dependiendo de tu código postal. En cuanto tu paquete es 
+                            recolectado, te enviamos el enlace de seguimiento por WhatsApp y correo electrónico.
+                        </div>
+                    </div>
+
+                    <div class="faq-single-item">
+                        <button class="faq-trigger-btn">
+                            <span>¿Qué métodos de pago aceptan para confirmar el pedido?</span>
+                            <span class="faq-toggle-arrow">▼</span>
+                        </button>
+                        <div class="faq-content-answer">
+                            Aceptamos transferencias bancarias (SPEI), depósitos en OXXO, tarjetas de crédito/débito vía Mercado Pago, 
+                            y pagos directos confirmados por nuestro canal oficial de WhatsApp.
+                        </div>
+                    </div>
+
+                    <div class="faq-single-item">
+                        <button class="faq-trigger-btn">
+                            <span>¿Qué ocurre si la camiseta no me queda? ¿Tienen garantía de cambio?</span>
+                            <span class="faq-toggle-arrow">▼</span>
+                        </button>
+                        <div class="faq-content-answer">
+                            Cuentas con 15 días tras recibir tu pedido para solicitar un cambio de talla sin costo de reposición 
+                            (la prenda debe conservar sus etiquetas originales y estar sin uso).
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN DE CONTACTO RÁPIDO & UBICACIÓN -->
+        <section id="contacto" class="section-padding">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-tag">Estamos Para Atenderte</span>
+                    <h2 class="section-title">Contacto Rápido & Despachos</h2>
+                    <p class="section-subtitle">¿Buscas una camiseta retro específica que no ves en el catálogo? Escríbenos.</p>
+                </div>
+
+                <div class="benefits-grid" style="margin-top: 30px;">
+                    <div class="benefit-card" style="background: #ffffff; padding: 22px; border-radius: var(--radius-md); border: 1px solid var(--border-light); box-shadow: var(--shadow-subtle);">
+                        <div class="benefit-icon-wrapper">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                            </svg>
+                        </div>
+                        <div class="benefit-details">
+                            <h4>Atención WhatsApp</h4>
+                            <p><a href="https://wa.me/525512345678" target="_blank" style="color: var(--accent); font-weight: 700; text-decoration: none;">+52 (55) 1234-5678</a></p>
+                        </div>
+                    </div>
+                    <div class="benefit-card" style="background: #ffffff; padding: 22px; border-radius: var(--radius-md); border: 1px solid var(--border-light); box-shadow: var(--shadow-subtle);">
+                        <div class="benefit-icon-wrapper">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                <polyline points="22,6 12,13 2,6"></polyline>
+                            </svg>
+                        </div>
+                        <div class="benefit-details">
+                            <h4>Atención por Correo</h4>
+                            <p><a href="mailto:pedidos@zonafutbol.com" style="color: #475569; text-decoration: none; font-weight: 600;">pedidos@zonafutbol.com</a></p>
+                        </div>
+                    </div>
+                    <div class="benefit-card" style="background: #ffffff; padding: 22px; border-radius: var(--radius-md); border: 1px solid var(--border-light); box-shadow: var(--shadow-subtle);">
+                        <div class="benefit-icon-wrapper">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                        </div>
+                        <div class="benefit-details">
+                            <h4>Horario de Operaciones</h4>
+                            <p style="color: #64748b;">Lunes a Sábado: 9:00 - 20:00 CST</p>
+                        </div>
+                    </div>
+                    <div class="benefit-card" style="background: #ffffff; padding: 22px; border-radius: var(--radius-md); border: 1px solid var(--border-light); box-shadow: var(--shadow-subtle);">
+                        <div class="benefit-icon-wrapper">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
+                        </div>
+                        <div class="benefit-details">
+                            <h4>Centro de Envíos</h4>
+                            <p style="color: #64748b;">Ciudad de México • Envíos a todo el país</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- PIE DE PÁGINA (FOOTER) -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-columns-grid">
+                <div class="footer-col-brand">
+                    <h2>ZONA <span>FÚTBOL</span></h2>
+                    <p>
+                        Especialistas en indumentaria futbolera oficial, réplicas históricas de época y los lanzamientos más codiciados del fútbol mundial. Viste la historia de tu club.
+                    </p>
+                    <div class="footer-socials">
+                        <a href="https://instagram.com" target="_blank" class="footer-social-icon" title="Instagram">📸</a>
+                        <a href="https://facebook.com" target="_blank" class="footer-social-icon" title="Facebook">📘</a>
+                        <a href="https://tiktok.com" target="_blank" class="footer-social-icon" title="TikTok">🎵</a>
+                        <a href="https://twitter.com" target="_blank" class="footer-social-icon" title="Twitter / X">🐦</a>
+                        <a href="https://wa.me/525512345678" target="_blank" class="footer-social-icon" title="WhatsApp">💬</a>
+                    </div>
+                </div>
+
+                <div class="footer-nav-col">
+                    <h4>Navegación</h4>
+                    <ul>
+                        <li><a href="#inicio">Inicio</a></li>
+                        <li><a href="#catalogo">Catálogo Completo</a></li>
+                        <li><a href="#minijuego-penal">Tiro al Ángulo</a></li>
+                        <li><a href="#personalizador">Personalizador de Jerseys</a></li>
+                        <li><a href="#guia-tallas">Guía de Medidas</a></li>
+                        <li><a href="#faq">Preguntas Frecuentes</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-nav-col">
+                    <h4>Categorías</h4>
+                    <ul>
+                        <li><a href="#catalogo">Camisetas Retro</a></li>
+                        <li><a href="#catalogo">Nuevas Temporadas 24/25</a></li>
+                        <li><a href="#catalogo">Selecciones Nacionales</a></li>
+                        <li><a href="#catalogo">Edición Champions League</a></li>
+                        <li><a href="#catalogo">Versión Jugador Authentic</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-nav-col">
+                    <h4>Preventas y Descuentos</h4>
+                    <p style="font-size: 0.88rem; margin-bottom: 14px; color: #94a3b8;">
+                        Suscríbete para enterarte de lanzamientos retro limitados antes que nadie y recibe $100 MXN en tu primer pedido.
+                    </p>
+                    <form onsubmit="event.preventDefault(); showToast('¡Gracias por suscribirte a Zona Fútbol! Te enviamos tu cupón.');" style="display: flex; gap: 8px;">
+                        <input type="email" placeholder="Tu correo electrónico..." class="search-input" style="background: rgba(255,255,255,0.06); color: #fff; border-color: rgba(255,255,255,0.15);" required>
+                        <button type="submit" class="btn btn-primary" style="padding: 10px 18px; font-size: 0.85rem;">Unirme</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="footer-copyright-bar">
+                <p>&copy; 2026 Zona Fútbol Inc. Todos los derechos reservados. Tienda Especializada en Camisetas de Fútbol.</p>
+                <div style="display: flex; gap: 8px;">
+                    <span style="background: rgba(255,255,255,0.08); padding: 4px 10px; border-radius: 4px; font-size: 0.74rem; font-weight: 800; color: #fff;">💳 VISA</span>
+                    <span style="background: rgba(255,255,255,0.08); padding: 4px 10px; border-radius: 4px; font-size: 0.74rem; font-weight: 800; color: #fff;">💳 MASTERCARD</span>
+                    <span style="background: rgba(255,255,255,0.08); padding: 4px 10px; border-radius: 4px; font-size: 0.74rem; font-weight: 800; color: #fff;">🏪 OXXO</span>
+                    <span style="background: rgba(255,255,255,0.08); padding: 4px 10px; border-radius: 4px; font-size: 0.74rem; font-weight: 800; color: #fff;">⚡ SPEI</span>
+                    <span style="background: rgba(255,255,255,0.08); padding: 4px 10px; border-radius: 4px; font-size: 0.74rem; font-weight: 800; color: #fff;">💬 WHATSAPP</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ======================================================================= -->
+    <!-- SLIDE-IN CARRITO DE COMPRAS DRAWER -->
+    <!-- ======================================================================= -->
+    <div id="cart-drawer-overlay" class="cart-drawer-backdrop" onclick="closeCartDrawer()"></div>
+
+    <aside id="cart-drawer" class="cart-slide-drawer" aria-label="Carrito de Compras">
+        <div class="cart-top-bar">
+            <h3>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="9" cy="21" r="1"></circle>
+                    <circle cx="20" cy="21" r="1"></circle>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg>
+                Tu Carrito de Camisetas
+            </h3>
+            <button class="close-cart-icon" onclick="closeCartDrawer()" title="Cerrar Carrito">&times;</button>
+        </div>
+
+        <!-- Barra de Progreso a Envío Gratis -->
+        <div class="free-shipping-tracker">
+            <p id="shipping-progress-text" class="tracker-label-text">
+                Calculando envío gratis...
+            </p>
+            <div class="tracker-bar-rail">
+                <div id="shipping-progress-bar" class="tracker-fill-neon"></div>
+            </div>
+        </div>
+
+        <!-- Contenedor dinámico de prendas -->
+        <div id="cart-drawer-items" class="cart-scroll-items"></div>
+
+        <div id="cart-empty-message" style="text-align: center; padding: 50px 20px; display: none;">
+            <div style="font-size: 3.5rem; margin-bottom: 12px;">⚽🛒</div>
+            <h4 style="color: var(--primary); margin-bottom: 6px;">Tu carrito está vacío</h4>
+            <p style="font-size: 0.88rem; color: var(--text-muted-dark);">Explora nuestras camisetas retro y de la nueva temporada para armar tu pedido.</p>
+            <button class="btn btn-primary btn-sm" style="margin-top: 15px;" onclick="closeCartDrawer(); window.location.href='#catalogo';">
+                Ver Catálogo
+            </button>
+        </div>
+
+        <!-- Resumen de Costos y Acciones -->
+        <div id="cart-drawer-summary" class="cart-summary-footer">
+            <div class="promo-code-input-row">
+                <input type="text" id="coupon-input" class="promo-code-input" placeholder="Cupón (ej: ZONAFUTBOL10)">
+                <button type="button" class="btn btn-outline-white" style="color: var(--primary); border-color: var(--border-light); padding: 8px 16px; font-size: 0.84rem;" onclick="applyCoupon()">
+                    Aplicar
+                </button>
+            </div>
+
+            <div class="summary-details-list">
+                <div class="summary-detail-row">
+                    <span>Subtotal:</span>
+                    <strong id="cart-subtotal">$0 MXN</strong>
+                </div>
+                <div id="cart-discount-row" class="summary-detail-row" style="display: none; color: var(--accent-dark);">
+                    <span>Descuento aplicado:</span>
+                    <strong id="cart-discount">-$0 MXN</strong>
+                </div>
+                <div class="summary-detail-row">
+                    <span>Costo de Envío:</span>
+                    <strong id="cart-shipping">$0 MXN</strong>
+                </div>
+                <div class="summary-detail-row grand-total">
+                    <span>Total a Pagar:</span>
+                    <strong id="cart-total" style="color: var(--accent-dark);">$0 MXN</strong>
+                </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <button type="button" class="btn-checkout-whatsapp" onclick="prepareWhatsAppOrder()">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.312.045-.693.08-2.227-.55-1.96-1.04-3.23-3.08-3.327-3.21-.098-.133-.799-1.063-.799-2.029s.508-1.442.688-1.64c.18-.198.393-.248.524-.248.131 0 .262.002.376.007.12.006.28-.046.438.334.164.394.558 1.36.607 1.46.05.1.082.217.016.35-.065.133-.098.217-.197.333-.098.116-.208.26-.297.35-.1.1-.205.209-.088.409.117.2 1.041 1.71 2.235 2.772.39.348.718.498.988.588.27.09.43.078.591-.106.164-.185.7-.816.886-1.096.185-.28.371-.233.623-.14.252.093 1.6.755 1.874.892.274.137.457.205.523.32.066.115.066.666-.078 1.071z"/>
+                    </svg>
+                    Confirmar Pedido por WhatsApp
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ======================================================================= -->
+    <!-- MODAL VISTA RÁPIDA (QUICK VIEW CON ZOOM) -->
+    <!-- ======================================================================= -->
+    <div id="modal-quickview" class="modal-wrapper" onclick="if(event.target === this) closeAllModals();">
+        <div class="modal-card">
+            <button class="modal-close-corner" onclick="closeAllModals()">&times;</button>
+            <div id="quickview-content"></div>
+        </div>
+    </div>
+
+    <!-- ======================================================================= -->
+    <!-- MODAL CHECKOUT / DATOS DE ENVÍO -->
+    <!-- ======================================================================= -->
+    <div id="modal-checkout" class="modal-wrapper" onclick="if(event.target === this) closeAllModals();">
+        <div class="modal-card checkout-modal-card">
+            <button class="modal-close-corner" onclick="closeAllModals()">&times;</button>
+            <h3>📍 Datos de Entrega y Envío</h3>
+            <p>Ingresa tus datos para generar el comprobante exacto y enviártelo por WhatsApp.</p>
+
+            <form onsubmit="submitOrderToWhatsApp(event)">
+                <div class="form-field-group">
+                    <label for="order-name" style="color: var(--text-dark);">Nombre y Apellidos:</label>
+                    <input type="text" id="order-name" class="search-input" placeholder="Ej: Juan Pérez" required>
+                </div>
+
+                <div class="two-col-inputs">
+                    <div class="form-field-group">
+                        <label for="order-phone" style="color: var(--text-dark);">Teléfono / WhatsApp:</label>
+                        <input type="tel" id="order-phone" class="search-input" placeholder="Ej: 55 1234 5678" required>
+                    </div>
+                    <div class="form-field-group">
+                        <label for="order-city" style="color: var(--text-dark);">Ciudad / Estado:</label>
+                        <input type="text" id="order-city" class="search-input" placeholder="Ej: Monterrey, NL" required>
+                    </div>
+                </div>
+
+                <div class="form-field-group">
+                    <label for="order-address" style="color: var(--text-dark);">Calle, Número, Colonia y Código Postal:</label>
+                    <input type="text" id="order-address" class="search-input" placeholder="Ej: Av. Juárez #450, Col. Centro, C.P. 64000" required>
+                </div>
+
+                <div class="form-field-group">
+                    <label for="order-payment" style="color: var(--text-dark);">Método de Pago Preferido:</label>
+                    <select id="order-payment" class="custom-select" style="width: 100%;">
+                        <option value="Transferencia Bancaria (SPEI)">Transferencia Bancaria (SPEI) - Recomendado</option>
+                        <option value="Depósito en OXXO">Depósito en OXXO</option>
+                        <option value="Tarjeta Débito/Crédito (Mercado Pago)">Tarjeta de Crédito / Débito (Mercado Pago)</option>
+                        <option value="Pago al Recibir / A convenir">Pago a convenir por WhatsApp</option>
+                    </select>
+                </div>
+
+                <div class="form-field-group">
+                    <label for="order-notes" style="color: var(--text-dark);">Instrucciones o Referencias de Entrega (Opcional):</label>
+                    <input type="text" id="order-notes" class="search-input" placeholder="Ej: Casa blanca con portón negro, timbre al fondo">
+                </div>
+
+                <div style="margin-top: 24px;">
+                    <button type="submit" class="btn-checkout-whatsapp">
+                        Generar Pedido y Abrir Chat de WhatsApp
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ======================================================================= -->
+    <!-- MODAL FAVORITOS (WISHLIST) -->
+    <!-- ======================================================================= -->
+    <div id="modal-favorites" class="modal-wrapper" onclick="if(event.target === this) closeAllModals();">
+        <div class="modal-card" style="max-width: 600px;">
+            <button class="modal-close-corner" onclick="closeAllModals()">&times;</button>
+            <h3 style="font-family: var(--font-heading); color: var(--primary); margin-bottom: 6px;">❤️ Tus Camisetas Favoritas</h3>
+            <p style="color: var(--text-muted-dark); font-size: 0.85rem; margin-bottom: 20px;">Prendas que has guardado para comprar luego:</p>
+            <div id="favorites-list"></div>
+        </div>
+    </div>
+
+
+
+    <!-- ======================================================================= -->
+    <!-- BOTÓN FLOTANTE WHATSAPP CON RADAR RIPPLE -->
+    <!-- ======================================================================= -->
+    <div class="floating-whatsapp-widget">
+        <div class="whatsapp-tooltip-bubble">¿Buscas una retro en especial? ¡Escríbenos!</div>
+        <a href="https://wa.me/525512345678?text=Hola%20Zona%20F%C3%BAtbol%2C%20quisiera%20m%C3%A1s%20informaci%C3%B3n%20sobre%20una%20camiseta" target="_blank" class="whatsapp-radar-btn" title="Contactar por WhatsApp">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.312.045-.693.08-2.227-.55-1.96-1.04-3.23-3.08-3.327-3.21-.098-.133-.799-1.063-.799-2.029s.508-1.442.688-1.64c.18-.198.393-.248.524-.248.131 0 .262.002.376.007.12.006.28-.046.438.334.164.394.558 1.36.607 1.46.05.1.082.217.016.35-.065.133-.098.217-.197.333-.098.116-.208.26-.297.35-.1.1-.205.209-.088.409.117.2 1.041 1.71 2.235 2.772.39.348.718.498.988.588.27.09.43.078.591-.106.164-.185.7-.816.886-1.096.185-.28.371-.233.623-.14.252.093 1.6.755 1.874.892.274.137.457.205.523.32.066.115.066.666-.078 1.071z"/>
+            </svg>
+        </a>
+    </div>
+
+    <!-- Scripts de Three.js 3D y Funcionalidad Pro -->
+    <script src="three.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
