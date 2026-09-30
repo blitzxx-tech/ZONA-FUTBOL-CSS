@@ -476,6 +476,29 @@ header.main-header {
     background: var(--accent);
 }
 
+.admin-access-pill {
+    background: #f8fafc;
+    border: 1.5px solid #cbd5e1;
+    border-radius: var(--radius-full);
+    padding: 7px 14px;
+    font-size: 0.76rem;
+    font-weight: 800;
+    color: #0f172a;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    letter-spacing: 0.2px;
+}
+
+.admin-access-pill:hover {
+    background: #000000;
+    color: #ffffff;
+    border-color: #000000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
 /* ==========================================================================
    HERO SECTION: ESTADIO ATHLETIC ULTRA CLEAN
    ========================================================================== */

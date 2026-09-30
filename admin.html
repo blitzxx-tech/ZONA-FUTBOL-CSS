@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administrativo // ZONA FÚTBOL</title>
+    <link rel="icon" type="image/svg+xml" href="logo_zona_futbol.svg">
+    <link rel="stylesheet" href="admin.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Cabinet+Grotesk:wght@800;900&family=Bebas+Neue&display=swap" rel="stylesheet">
+</head>
+<body class="admin-body">
+
+    <!-- Notificaciones Flotantes (Toasts) -->
+    <div id="admin-toast-container" class="admin-toast-container"></div>
+
+    <div class="admin-layout">
+
+        <!-- =================================================================== -->
+        <!-- SIDEBAR DE NAVEGACIÓN PRINCIPAL -->
+        <!-- =================================================================== -->
+        <aside class="admin-sidebar" id="admin-sidebar">
+            <div class="sidebar-brand-box">
+                <a href="admin.html" class="sidebar-brand">
+                    <img src="logo_zona_futbol.svg" alt="Zona Fútbol" class="sidebar-logo">
+                    <div class="sidebar-brand-text">
+                        <h2>ZONA <span>FÚTBOL</span></h2>
+                        <span class="sidebar-subtag">CENTRO DE CONTROL // ERP</span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Perfil Activo Compacto en Sidebar -->
+            <div class="sidebar-user-card" id="sidebar-user-card" onclick="switchTab('usuarios')" title="Click para cambiar rol o ver perfil">
+                <div class="user-avatar-wrap">
+                    <img id="sb-user-avatar" src="imagenes/camisetas/real-madrid.jpg" alt="Avatar">
+                    <span class="user-status-dot online"></span>
+                </div>
+                <div class="user-meta">
+                    <h4 id="sb-user-name">Carlos Mendoza</h4>
+                    <span class="badge-role" id="sb-user-role">ADMINISTRADOR</span>
+                </div>
+            </div>
+
+            <!-- Menú de Módulos -->
+            <nav class="sidebar-nav">
+                <div class="nav-section-label">MÓDULOS PRINCIPALES</div>
+                <ul class="nav-links">
+                    <li>
+                        <button class="nav-item active" data-tab="dashboard" onclick="switchTab('dashboard')">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="7" height="9"></rect>
+                                <rect x="14" y="3" width="7" height="5"></rect>
+                                <rect x="14" y="12" width="7" height="9"></rect>
+                                <rect x="3" y="16" width="7" height="5"></rect>
+                            </svg>
+                            <span>Dashboard & Ventas</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button class="nav-item" data-tab="inventario" onclick="switchTab('inventario')">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                            </svg>
+                            <span>Control de Inventario</span>
+                            <span class="pill-count" id="sb-low-stock-count">0</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button class="nav-item" data-tab="ventas" onclick="switchTab('ventas')">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="9" cy="21" r="1"></circle>
+                                <circle cx="20" cy="21" r="1"></circle>
+                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                            </svg>
+                            <span>Control de Ventas</span>
+                            <span class="pill-count accent" id="sb-pending-orders-count">0</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button class="nav-item" data-tab="taller" onclick="switchTab('taller')">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+                            </svg>
+                            <span>Taller de Dorsales</span>
+                            <span class="pill-count warning" id="sb-custom-orders-count">0</span>
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="nav-section-label">ADMINISTRACIÓN & ACCESOS</div>
+                <ul class="nav-links">
+                    <li>
+                        <button class="nav-item" data-tab="usuarios" onclick="switchTab('usuarios')">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                            <span>Perfiles & Roles</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button class="nav-item" data-tab="sucursales" onclick="switchTab('sucursales')">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                            </svg>
+                            <span>Sucursales & Sedes</span>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="index.html" class="btn-sidebar-store" target="_blank" title="Abrir tienda pública">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                        <polyline points="15 3 21 3 21 9"></polyline>
+                        <line x1="10" y1="14" x2="21" y2="3"></line>
+                    </svg>
+                    <span>Ver Tienda Online</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- =================================================================== -->
+        <!-- ÁREA PRINCIPAL DE CONTENIDO -->
+        <!-- =================================================================== -->
+        <div class="admin-main">
+
+            <!-- BARRA SUPERIOR DE CONTROL -->
+            <header class="admin-topbar">
+                <div class="topbar-left">
+                    <button class="sidebar-toggle-btn" onclick="toggleSidebar()" title="Colapsar menú">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="3" y1="12" x2="21" y2="12"></line>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                    </button>
+                    <div class="topbar-title-block">
+                        <h1 id="topbar-view-title">Dashboard & Estadísticas</h1>
+                        <p id="topbar-view-subtitle">Resumen ejecutivo y monitoreo en tiempo real</p>
+                    </div>
+                </div>
+
+                <div class="topbar-right">
+                    <!-- Selector Rápido de Sucursal / Canal -->
+                    <div class="topbar-filter-branch">
+                        <label for="global-branch-select">📍 Sucursal:</label>
+                        <select id="global-branch-select" class="admin-select-sm" onchange="onGlobalBranchChange(this.value)">
+                            <option value="todas">Todas las Sedes (Consolidado)</option>
+                            <option value="online">Tienda Online (Web & Envíos)</option>
+                            <option value="estadio">Sucursal Estadio Azteca</option>
+                            <option value="centro">Sucursal Centro Histórico</option>
+                            <option value="polanco">Sucursal Polanco Luxury</option>
+                        </select>
+                    </div>
+
+                    <!-- Selector Rápido de Rol Activo para Pruebas / Demostración -->
+                    <div class="role-quick-switcher" title="Cambiar usuario o rol activo">
+                        <span class="role-switch-label">Simular Rol:</span>
+                        <div class="role-buttons-pill">
+                            <button type="button" class="role-pill-btn active" data-role="ADMIN" onclick="changeActiveUserRole('ADMIN')">ADMIN</button>
+                            <button type="button" class="role-pill-btn" data-role="VENDEDOR" onclick="changeActiveUserRole('VENDEDOR')">VENDEDOR</button>
+                            <button type="button" class="role-pill-btn" data-role="TALLER" onclick="changeActiveUserRole('TALLER')">TALLER</button>
+                            <button type="button" class="role-pill-btn" data-role="GERENTE" onclick="changeActiveUserRole('GERENTE')">GERENTE</button>
+                        </div>
+                    </div>
+
+                    <!-- Botón de Notificaciones -->
+                    <button class="topbar-icon-btn" onclick="showToast('No hay alertas críticas en el sistema. Inventario estable.')" title="Alertas del sistema">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        </svg>
+                        <span class="topbar-badge-dot"></span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- CONTENIDO DE LAS PESTAÑAS (VISTAS) -->
+            <div class="admin-content-area">
+
+                <!-- ======================================================= -->
+                <!-- PESTAÑA 1: DASHBOARD & ESTADÍSTICAS                     -->
+                <!-- ======================================================= -->
+                <section id="view-dashboard" class="admin-view active">
+                    
+                    <!-- BARRA DE CONSULTA & FILTROS (Día, Semana, Mes, Sucursal) -->
+                    <div class="analytics-filter-toolbar">
+                        <div class="filter-group-left">
+                            <span class="toolbar-label">Consulta Temporal:</span>
+                            <div class="period-pills-group" id="analytics-period-pills">
+                                <button type="button" class="period-pill" data-period="diaria" onclick="setAnalyticsPeriod('diaria')">Hoy (Diaria)</button>
+                                <button type="button" class="period-pill" data-period="semanal" onclick="setAnalyticsPeriod('semanal')">Semanal (7 días)</button>
+                                <button type="button" class="period-pill active" data-period="mensual" onclick="setAnalyticsPeriod('mensual')">Mensual (Este Mes)</button>
+                                <button type="button" class="period-pill" data-period="historica" onclick="setAnalyticsPeriod('historica')">Histórico Total</button>
+                            </div>
+                        </div>
+                        <div class="filter-group-right">
+                            <button class="btn btn-secondary-admin" onclick="exportAnalyticsReport()">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                                Exportar Resumen
+                            </button>
+                            <button class="btn btn-primary-admin" onclick="openNewSaleModal()">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                                Registrar Venta
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- TARJETAS KPI EJECUTIVAS -->
+                    <div class="kpi-grid">
+                        <div class="kpi-card">
+                            <div class="kpi-header">
+                                <span class="kpi-title">Ingresos Totales</span>
+                                <div class="kpi-icon-badge green">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="12" y1="1" x2="12" y2="23"></line>
+                                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="kpi-value" id="kpi-total-revenue">$0 MXN</div>
+                            <div class="kpi-footer">
+                                <span class="kpi-trend positive" id="kpi-revenue-trend">▲ +14.8%</span>
+                                <span class="kpi-subtext" id="kpi-period-subtext">vs. período anterior</span>
+                            </div>
+                        </div>
+
+                        <div class="kpi-card">
+                            <div class="kpi-header">
+                                <span class="kpi-title">Camisetas Vendidas</span>
+                                <div class="kpi-icon-badge blue">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="9" cy="21" r="1"></circle>
+                                        <circle cx="20" cy="21" r="1"></circle>
+                                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="kpi-value" id="kpi-total-orders">0 uds.</div>
+                            <div class="kpi-footer">
+                                <span class="kpi-trend positive" id="kpi-orders-trend">▲ +9.2%</span>
+                                <span class="kpi-subtext">pedidos confirmados</span>
+                            </div>
+                        </div>
+
+                        <div class="kpi-card">
+                            <div class="kpi-header">
+                                <span class="kpi-title">Ticket Promedio</span>
+                                <div class="kpi-icon-badge purple">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                                        <line x1="2" y1="10" x2="22" y2="10"></line>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="kpi-value" id="kpi-avg-ticket">$0 MXN</div>
+                            <div class="kpi-footer">
+                                <span class="kpi-subtext">por orden finalizada</span>
+                            </div>
+                        </div>
+
+                        <div class="kpi-card">
+                            <div class="kpi-header">
+                                <span class="kpi-title">Tasa de Personalización</span>
+                                <div class="kpi-icon-badge gold">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M12 20h9"></path>
+                                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="kpi-value" id="kpi-custom-rate">0%</div>
+                            <div class="kpi-footer">
+                                <span class="kpi-subtext" id="kpi-custom-detail">con dorsal o parche</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- GRÁFICOS Y ANÁLISIS EN PROFUNDIDAD -->
+                    <div class="dashboard-charts-grid">
+                        
+                        <!-- Gráfico Principal: Evolución de Ventas en el Tiempo -->
+                        <div class="chart-card chart-main">
+                            <div class="chart-card-header">
+                                <div>
+                                    <h3>Evolución de Ingresos & Ventas</h3>
+                                    <p id="chart-timeline-subtitle">Comparativa diaria acumulada del período</p>
+                                </div>
+                                <div class="chart-legend">
+                                    <span class="legend-item"><span class="legend-bullet online"></span> Online</span>
+                                    <span class="legend-item"><span class="legend-bullet branches"></span> Sucursales Físicas</span>
+                                </div>
+                            </div>
+                            <!-- Contenedor del Gráfico SVG Dinámico -->
+                            <div class="svg-chart-container" id="sales-evolution-chart"></div>
+                        </div>
+
+                        <!-- Gráfico 2: Desglose por Sucursal -->
+                        <div class="chart-card chart-side">
+                            <div class="chart-card-header">
+                                <div>
+                                    <h3>Ventas por Sucursal</h3>
+                                    <p>Distribución de ingresos por canal</p>
+                                </div>
+                            </div>
+                            <div class="branch-breakdown-list" id="branch-breakdown-list"></div>
+                        </div>
+                    </div>
+
+                    <!-- FILA INFERIOR: TOP CAMISETAS + COLA DE PEDIDOS RECIENTES -->
+                    <div class="dashboard-tables-grid">
+                        
+                        <!-- Top 5 Camisetas Más Vendidas -->
+                        <div class="content-card">
+                            <div class="content-card-header">
+                                <h3>🔥 Top Camisetas Más Vendidas</h3>
+                                <button class="btn-link" onclick="switchTab('inventario')">Ver Catálogo Completo &rarr;</button>
+                            </div>
+                            <div class="top-products-list" id="top-products-list"></div>
+                        </div>
+
+                        <!-- Métodos de Pago y Desempeño Operativo -->
+                        <div class="content-card">
+                            <div class="content-card-header">
+                                <h3>💳 Métodos de Pago & Canales</h3>
+                                <span class="badge-subtle">Tiempo Real</span>
+                            </div>
+                            <div class="payment-methods-grid" id="payment-methods-breakdown"></div>
+                        </div>
+                    </div>
+
+                </section>
+
+                <!-- ======================================================= -->
+                <!-- PESTAÑA 2: CONTROL DE INVENTARIO                        -->
+                <!-- ======================================================= -->
+                <section id="view-inventario" class="admin-view">
+                    
+                    <!-- Barra de Control de Inventario -->
+                    <div class="section-action-bar">
+                        <div class="search-filter-box">
+                            <div class="search-input-wrap">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg>
+                                <input type="text" id="inventory-search-input" placeholder="Buscar por club, selección o modelo..." oninput="filterInventoryTable()">
+                            </div>
+
+                            <select id="inventory-category-filter" class="admin-select" onchange="filterInventoryTable()">
+                                <option value="todas">Todas las Categorías</option>
+                                <option value="retro">Históricas Retro</option>
+                                <option value="nuevas">Temporada 24/25</option>
+                                <option value="laliga">LaLiga</option>
+                                <option value="premier">Premier League</option>
+                                <option value="seriea">Serie A</option>
+                                <option value="selecciones">Selecciones Nacionales</option>
+                            </select>
+
+                            <select id="inventory-stock-filter" class="admin-select" onchange="filterInventoryTable()">
+                                <option value="todos">Todos los Estados</option>
+                                <option value="bajo">⚠️ Stock Crítico (&le; 5 uds)</option>
+                                <option value="agotado">🔴 Agotados (0 uds)</option>
+                                <option value="ok">🟢 En Stock (&gt; 5 uds)</option>
+                            </select>
+                        </div>
+
+                        <div class="action-buttons-group">
+                            <button class="btn btn-secondary-admin" onclick="exportInventoryCSV()">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                                Exportar CSV
+                            </button>
+                            <button class="btn btn-primary-admin" onclick="openNewProductModal()">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                                Agregar Nueva Camiseta
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Resumen Métrico de Stock -->
+                    <div class="inventory-stats-strip">
+                        <div class="strip-item">
+                            <span class="strip-label">Modelos Registrados:</span>
+                            <strong id="inv-total-models">12</strong>
+                        </div>
+                        <div class="strip-item">
+                            <span class="strip-label">Piezas Físicas Totales:</span>
+                            <strong id="inv-total-units">184</strong>
+                        </div>
+                        <div class="strip-item warning">
+                            <span class="strip-label">En Alerta de Reorden:</span>
+                            <strong id="inv-low-models">3</strong>
+                        </div>
+                        <div class="strip-item danger">
+                            <span class="strip-label">Agotados:</span>
+                            <strong id="inv-out-models">1</strong>
+                        </div>
+                        <div class="strip-item">
+                            <span class="strip-label">Valor del Inventario:</span>
+                            <strong id="inv-total-value">$218,416 MXN</strong>
+                        </div>
+                    </div>
+
+                    <!-- TABLA DE INVENTARIO DETALLADA POR TALLAS -->
+                    <div class="admin-table-container">
+                        <table class="admin-data-table">
+                            <thead>
+                                <tr>
+                                    <th>Camiseta</th>
+                                    <th>Categoría / Era</th>
+                                    <th>Precio Venta</th>
+                                    <th class="center-col">Talla S</th>
+                                    <th class="center-col">Talla M</th>
+                                    <th class="center-col">Talla L</th>
+                                    <th class="center-col">Talla XL</th>
+                                    <th class="center-col">Talla XXL</th>
+                                    <th class="center-col">Stock Total</th>
+                                    <th>Estado</th>
+                                    <th class="right-col">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventory-table-body"></tbody>
+                        </table>
+                    </div>
+
+                    <!-- SECCIÓN CONTROL DE INSUMOS DEL TALLER (Vinilos y Parches) -->
+                    <div class="content-card" style="margin-top: 30px;">
+                        <div class="content-card-header">
+                            <div>
+                                <h3>🧵 Insumos de Personalización & Parches</h3>
+                                <p>Control de rollos de vinil termosellado y parches oficiales de manga</p>
+                            </div>
+                            <button class="btn btn-secondary-admin btn-sm" onclick="showToast('Insumos de taller reabastecidos con éxito.')">
+                                + Reabastecer Insumos
+                            </button>
+                        </div>
+                        <div class="supplies-grid" id="workshop-supplies-grid"></div>
+                    </div>
+
+                </section>
+
+                <!-- ======================================================= -->
+                <!-- PESTAÑA 3: CONTROL DE VENTAS                            -->
+                <!-- ======================================================= -->
+                <section id="view-ventas" class="admin-view">
+                    
+                    <!-- Barra de Filtros de Ventas -->
+                    <div class="section-action-bar">
+                        <div class="search-filter-box">
+                            <div class="search-input-wrap">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg>
+                                <input type="text" id="sales-search-input" placeholder="Buscar por Folio (#ZF), cliente, teléfono..." oninput="filterSalesTable()">
+                            </div>
+
+                            <select id="sales-status-filter" class="admin-select" onchange="filterSalesTable()">
+                                <option value="todos">Todos los Estados</option>
+                                <option value="Pendiente">🟡 Pendientes de Pago</option>
+                                <option value="Pagado">🔵 Pagados / Confirmados</option>
+                                <option value="En Taller">🟣 En Taller (Estampando)</option>
+                                <option value="Enviado">🟠 Enviados (En Tránsito)</option>
+                                <option value="Entregado">🟢 Entregados</option>
+                                <option value="Cancelado">🔴 Cancelados</option>
+                            </select>
+
+                            <select id="sales-branch-filter" class="admin-select" onchange="filterSalesTable()">
+                                <option value="todas">Todos los Canales</option>
+                                <option value="Tienda Online">🌐 Tienda Online</option>
+                                <option value="Sucursal Estadio Azteca">🏟️ Sucursal Estadio Azteca</option>
+                                <option value="Sucursal Centro Histórico">🏛️ Sucursal Centro Histórico</option>
+                                <option value="Sucursal Polanco Luxury">💎 Sucursal Polanco</option>
+                            </select>
+                        </div>
+
+                        <div class="action-buttons-group">
+                            <button class="btn btn-secondary-admin" onclick="exportSalesCSV()">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                                Exportar Ventas
+                            </button>
+                            <button class="btn btn-primary-admin" onclick="openNewSaleModal()">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                                Registrar Venta Manual
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- TABLA MAESTRA DE VENTAS -->
+                    <div class="admin-table-container">
+                        <table class="admin-data-table">
+                            <thead>
+                                <tr>
+                                    <th>Folio</th>
+                                    <th>Fecha & Hora</th>
+                                    <th>Cliente</th>
+                                    <th>Canal / Sede</th>
+                                    <th>Productos & Estampado</th>
+                                    <th>Método Pago</th>
+                                    <th>Total ($ MXN)</th>
+                                    <th>Estatus Pedido</th>
+                                    <th class="right-col">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sales-table-body"></tbody>
+                        </table>
+                    </div>
+
+                </section>
+
+                <!-- ======================================================= -->
+                <!-- PESTAÑA 4: TALLER DE DORSALES (COLA DE ESTAMPADO)       -->
+                <!-- ======================================================= -->
+                <section id="view-taller" class="admin-view">
+                    <div class="workshop-intro-card">
+                        <div class="workshop-intro-text">
+                            <h2>🎽 Mesa de Trabajo & Termosellado</h2>
+                            <p>Cola de producción en tiempo real para camisetas que requieren dorsal vinílico de alta densidad o parches oficiales.</p>
+                        </div>
+                        <div class="workshop-quick-actions">
+                            <button class="btn btn-secondary-admin" onclick="printWorkshopWorksheet()">
+                                🖨️ Imprimir Hoja de Taller
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Tarjetas de Pedidos en Cola de Taller -->
+                    <div class="workshop-queue-grid" id="workshop-queue-container"></div>
+                </section>
+
+                <!-- ======================================================= -->
+                <!-- PESTAÑA 5: PERFILES DE USUARIO & ROLES                  -->
+                <!-- ======================================================= -->
+                <section id="view-usuarios" class="admin-view">
+                    
+                    <div class="user-management-header">
+                        <div>
+                            <h2>Control de Acceso & Perfiles de Usuario</h2>
+                            <p>Asignación de roles de sistema, permisos operativos y sucursales asignadas</p>
+                        </div>
+                        <button class="btn btn-primary-admin" onclick="openNewUserModal()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <line x1="20" y1="8" x2="20" y2="14"></line>
+                                <line x1="23" y1="11" x2="17" y2="11"></line>
+                            </svg>
+                            Nuevo Empleado / Usuario
+                        </button>
+                    </div>
+
+                    <!-- Tarjeta del Usuario Activo -->
+                    <div class="active-user-profile-card" id="active-user-profile-display">
+                        <div class="profile-left">
+                            <img id="profile-card-avatar" src="imagenes/camisetas/real-madrid.jpg" alt="Avatar">
+                            <div>
+                                <h3 id="profile-card-name">Carlos Mendoza</h3>
+                                <p id="profile-card-email">carlos.mendoza@zonafutbol.com</p>
+                                <div class="profile-meta-tags">
+                                    <span class="badge-role" id="profile-card-role">ADMINISTRADOR</span>
+                                    <span class="badge-branch" id="profile-card-branch">📍 Todas las Sedes</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="profile-right">
+                            <h4>Permisos Activos:</h4>
+                            <div class="permissions-checklist" id="profile-card-permissions"></div>
+                        </div>
+                    </div>
+
+                    <!-- TABLA DE USUARIOS DEL SISTEMA -->
+                    <div class="content-card" style="margin-top: 25px;">
+                        <div class="content-card-header">
+                            <h3>Usuarios Registrados en Zona Fútbol</h3>
+                            <span class="badge-subtle" id="users-count-tag">4 Usuarios</span>
+                        </div>
+                        <div class="admin-table-container">
+                            <table class="admin-data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Usuario</th>
+                                        <th>Correo</th>
+                                        <th>Rol de Acceso</th>
+                                        <th>Sede Asignada</th>
+                                        <th>Última Conexión</th>
+                                        <th>Estado</th>
+                                        <th class="right-col">Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="users-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </section>
+
+                <!-- ======================================================= -->
+                <!-- PESTAÑA 6: SUCURSALES & SEDES                          -->
+                <!-- ======================================================= -->
+                <section id="view-sucursales" class="admin-view">
+                    <div class="user-management-header">
+                        <div>
+                            <h2>Puntos de Venta & Canales de Distribución</h2>
+                            <p>Gestión de bodegas físicas, tienda online y centros de despacho</p>
+                        </div>
+                    </div>
+                    <div class="branches-cards-grid" id="branches-cards-grid"></div>
+                </section>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- MODALES OPERATIVOS                                                  -->
+    <!-- =================================================================== -->
+
+    <!-- MODAL 1: REGISTRAR VENTA MANUAL (MOSTRADOR O WHATSAPP) -->
+    <div id="modal-new-sale" class="admin-modal-overlay">
+        <div class="admin-modal-box">
+            <div class="admin-modal-header">
+                <h3>📝 Registrar Nueva Venta (Mostrador / WhatsApp)</h3>
+                <button class="modal-close-btn" onclick="closeModal('modal-new-sale')">&times;</button>
+            </div>
+            <form id="form-new-sale" onsubmit="handleNewSaleSubmit(event)">
+                <div class="admin-modal-body">
+                    <div class="modal-form-grid">
+                        <div class="form-field-group">
+                            <label>Nombre del Cliente:</label>
+                            <input type="text" id="sale-client-name" class="form-input-admin" placeholder="Ej: Rodrigo Valenzuela" required>
+                        </div>
+                        <div class="form-field-group">
+                            <label>Teléfono WhatsApp:</label>
+                            <input type="tel" id="sale-client-phone" class="form-input-admin" placeholder="Ej: 5543219876" required>
+                        </div>
+                    </div>
+
+                    <div class="form-field-group">
+                        <label>Camiseta Seleccionada:</label>
+                        <select id="sale-jersey-select" class="form-input-admin" onchange="calculateNewSaleTotal()"></select>
+                    </div>
+
+                    <div class="modal-form-grid three-col">
+                        <div class="form-field-group">
+                            <label>Talla:</label>
+                            <select id="sale-size-select" class="form-input-admin">
+                                <option value="S">S</option>
+                                <option value="M">M</option>
+                                <option value="L" selected>L</option>
+                                <option value="XL">XL</option>
+                                <option value="XXL">XXL</option>
+                            </select>
+                        </div>
+                        <div class="form-field-group">
+                            <label>Sucursal / Canal:</label>
+                            <select id="sale-branch-select" class="form-input-admin">
+                                <option value="Tienda Online">🌐 Tienda Online</option>
+                                <option value="Sucursal Estadio Azteca">🏟️ Estadio Azteca</option>
+                                <option value="Sucursal Centro Histórico">🏛️ Centro Histórico</option>
+                                <option value="Sucursal Polanco Luxury">💎 Polanco</option>
+                            </select>
+                        </div>
+                        <div class="form-field-group">
+                            <label>Método de Pago:</label>
+                            <select id="sale-payment-select" class="form-input-admin">
+                                <option value="Transferencia SPEI">Transferencia SPEI</option>
+                                <option value="Tarjeta Crédito/Débito">Tarjeta Bancaria</option>
+                                <option value="Efectivo en Mostrador">Efectivo en Mostrador</option>
+                                <option value="Depósito OXXO">Depósito OXXO</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="customization-fieldset">
+                        <div class="custom-fieldset-title">Personalización de Dorsal:</div>
+                        <div class="modal-form-grid">
+                            <div class="form-field-group">
+                                <label>Nombre en Espalda (opcional):</label>
+                                <input type="text" id="sale-custom-name" class="form-input-admin" placeholder="Ej: ZIDANE o vacío si es lisa" oninput="calculateNewSaleTotal()">
+                            </div>
+                            <div class="form-field-group">
+                                <label>Dorsal / Número (opcional):</label>
+                                <input type="text" id="sale-custom-number" class="form-input-admin" placeholder="Ej: 5 o vacío" maxlength="2" oninput="calculateNewSaleTotal()">
+                            </div>
+                        </div>
+                        <div class="form-field-group">
+                            <label>Parche en Manga:</label>
+                            <select id="sale-patch-select" class="form-input-admin" onchange="calculateNewSaleTotal()">
+                                <option value="Sin parches adicionales">Sin parche adicional</option>
+                                <option value="Champions League Starball + Respect">Champions League Starball (+ $80 MXN)</option>
+                                <option value="Copa del Mundo Campeón FIFA">Mundial Campeón FIFA (+ $80 MXN)</option>
+                                <option value="Parche de Liga Nacional">Parche de Liga (+ $50 MXN)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="sale-total-banner">
+                        <span>Total de la Venta:</span>
+                        <strong id="sale-total-display">$0 MXN</strong>
+                    </div>
+                </div>
+
+                <div class="admin-modal-footer">
+                    <button type="button" class="btn btn-secondary-admin" onclick="closeModal('modal-new-sale')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary-admin">Confirmar y Registrar Venta</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: EDITAR STOCK DE CAMISETA -->
+    <div id="modal-edit-stock" class="admin-modal-overlay">
+        <div class="admin-modal-box">
+            <div class="admin-modal-header">
+                <h3>📦 Modificar Stock de Prenda</h3>
+                <button class="modal-close-btn" onclick="closeModal('modal-edit-stock')">&times;</button>
+            </div>
+            <form id="form-edit-stock" onsubmit="handleEditStockSubmit(event)">
+                <input type="hidden" id="edit-stock-product-id">
+                <div class="admin-modal-body">
+                    <div class="product-mini-preview" id="edit-stock-preview"></div>
+                    <p style="margin-bottom: 16px; color: #64748b; font-size: 0.9rem;">
+                        Ingresa el inventario físico disponible para cada una de las tallas:
+                    </p>
+                    <div class="sizes-stock-inputs-grid">
+                        <div class="size-input-col">
+                            <label>Talla S</label>
+                            <input type="number" id="stock-val-s" min="0" max="999" class="form-input-admin" required>
+                        </div>
+                        <div class="size-input-col">
+                            <label>Talla M</label>
+                            <input type="number" id="stock-val-m" min="0" max="999" class="form-input-admin" required>
+                        </div>
+                        <div class="size-input-col">
+                            <label>Talla L</label>
+                            <input type="number" id="stock-val-l" min="0" max="999" class="form-input-admin" required>
+                        </div>
+                        <div class="size-input-col">
+                            <label>Talla XL</label>
+                            <input type="number" id="stock-val-xl" min="0" max="999" class="form-input-admin" required>
+                        </div>
+                        <div class="size-input-col">
+                            <label>Talla XXL</label>
+                            <input type="number" id="stock-val-xxl" min="0" max="999" class="form-input-admin" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="admin-modal-footer">
+                    <button type="button" class="btn btn-secondary-admin" onclick="closeModal('modal-edit-stock')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary-admin">Guardar Cambios de Inventario</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 3: AGREGAR NUEVA CAMISETA AL CATÁLOGO -->
+    <div id="modal-new-product" class="admin-modal-overlay">
+        <div class="admin-modal-box">
+            <div class="admin-modal-header">
+                <h3>✨ Añadir Nueva Camiseta al Inventario</h3>
+                <button class="modal-close-btn" onclick="closeModal('modal-new-product')">&times;</button>
+            </div>
+            <form id="form-new-product" onsubmit="handleNewProductSubmit(event)">
+                <div class="admin-modal-body">
+                    <div class="modal-form-grid">
+                        <div class="form-field-group">
+                            <label>Nombre del Modelo / Club:</label>
+                            <input type="text" id="new-prod-name" class="form-input-admin" placeholder="Ej: Juventus 1996 Retro - Champions" required>
+                        </div>
+                        <div class="form-field-group">
+                            <label>Temporada / Era:</label>
+                            <input type="text" id="new-prod-era" class="form-input-admin" placeholder="Ej: 1995/1996" required>
+                        </div>
+                    </div>
+
+                    <div class="modal-form-grid three-col">
+                        <div class="form-field-group">
+                            <label>Precio Venta ($ MXN):</label>
+                            <input type="number" id="new-prod-price" class="form-input-admin" placeholder="1399" required>
+                        </div>
+                        <div class="form-field-group">
+                            <label>Tipo de Colección:</label>
+                            <select id="new-prod-category" class="form-input-admin">
+                                <option value="retro">Histórica Retro</option>
+                                <option value="nuevas">Nueva Temporada 24/25</option>
+                            </select>
+                        </div>
+                        <div class="form-field-group">
+                            <label>Liga / Competición:</label>
+                            <select id="new-prod-league" class="form-input-admin">
+                                <option value="laliga">LaLiga</option>
+                                <option value="premier">Premier League</option>
+                                <option value="seriea">Serie A</option>
+                                <option value="selecciones">Selecciones</option>
+                                <option value="otras">Otras Ligas</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-field-group">
+                        <label>Ruta de Imagen (URL o archivo local):</label>
+                        <input type="text" id="new-prod-image" class="form-input-admin" placeholder="imagenes/camisetas/juventus.jpg" value="imagenes/camisetas/tienda-camisetas.jpg" required>
+                    </div>
+
+                    <label style="display: block; font-weight: 700; margin-top: 15px; margin-bottom: 8px;">Stock Inicial por Talla:</label>
+                    <div class="sizes-stock-inputs-grid">
+                        <div class="size-input-col">
+                            <label>S</label>
+                            <input type="number" id="new-stock-s" value="3" min="0" class="form-input-admin">
+                        </div>
+                        <div class="size-input-col">
+                            <label>M</label>
+                            <input type="number" id="new-stock-m" value="5" min="0" class="form-input-admin">
+                        </div>
+                        <div class="size-input-col">
+                            <label>L</label>
+                            <input type="number" id="new-stock-l" value="6" min="0" class="form-input-admin">
+                        </div>
+                        <div class="size-input-col">
+                            <label>XL</label>
+                            <input type="number" id="new-stock-xl" value="4" min="0" class="form-input-admin">
+                        </div>
+                        <div class="size-input-col">
+                            <label>XXL</label>
+                            <input type="number" id="new-stock-xxl" value="2" min="0" class="form-input-admin">
+                        </div>
+                    </div>
+                </div>
+                <div class="admin-modal-footer">
+                    <button type="button" class="btn btn-secondary-admin" onclick="closeModal('modal-new-product')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary-admin">Guardar y Publicar en Catálogo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 4: DETALLE DE PEDIDO & TICKET IMPRIMIBLE -->
+    <div id="modal-order-detail" class="admin-modal-overlay">
+        <div class="admin-modal-box modal-wide">
+            <div class="admin-modal-header">
+                <h3 id="modal-order-title">Detalle de Orden #ZF-1048</h3>
+                <button class="modal-close-btn" onclick="closeModal('modal-order-detail')">&times;</button>
+            </div>
+            <div class="admin-modal-body" id="modal-order-content"></div>
+            <div class="admin-modal-footer">
+                <button type="button" class="btn btn-secondary-admin" onclick="closeModal('modal-order-detail')">Cerrar</button>
+                <button type="button" class="btn btn-secondary-admin" onclick="window.print()">
+                    🖨️ Imprimir Ticket / Guía
+                </button>
+                <button type="button" class="btn btn-primary-admin" id="btn-wa-order-contact">
+                    💬 Contactar por WhatsApp
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 5: AGREGAR NUEVO USUARIO / EMPLEADO -->
+    <div id="modal-new-user" class="admin-modal-overlay">
+        <div class="admin-modal-box">
+            <div class="admin-modal-header">
+                <h3>👤 Agregar Nuevo Empleado / Usuario</h3>
+                <button class="modal-close-btn" onclick="closeModal('modal-new-user')">&times;</button>
+            </div>
+            <form id="form-new-user" onsubmit="handleNewUserSubmit(event)">
+                <div class="admin-modal-body">
+                    <div class="modal-form-grid">
+                        <div class="form-field-group">
+                            <label>Nombre Completo:</label>
+                            <input type="text" id="new-user-name" class="form-input-admin" placeholder="Ej: Diana Laura Trejo" required>
+                        </div>
+                        <div class="form-field-group">
+                            <label>Correo Electrónico:</label>
+                            <input type="email" id="new-user-email" class="form-input-admin" placeholder="diana.trejo@zonafutbol.com" required>
+                        </div>
+                    </div>
+                    <div class="modal-form-grid">
+                        <div class="form-field-group">
+                            <label>Rol de Usuario:</label>
+                            <select id="new-user-role" class="form-input-admin" required>
+                                <option value="ADMIN">ADMINISTRADOR GENERAL (Acceso Total)</option>
+                                <option value="VENDEDOR" selected>VENDEDOR (Mostrador / WhatsApp)</option>
+                                <option value="TALLER">TALLER DE ESTAMPADOS (Vinilos & Parches)</option>
+                                <option value="GERENTE">GERENTE DE SUCURSAL</option>
+                            </select>
+                        </div>
+                        <div class="form-field-group">
+                            <label>Sede Asignada:</label>
+                            <select id="new-user-branch" class="form-input-admin">
+                                <option value="Todas las Sedes">Todas las Sedes</option>
+                                <option value="Tienda Online">Tienda Online</option>
+                                <option value="Sucursal Estadio Azteca">Sucursal Estadio Azteca</option>
+                                <option value="Sucursal Centro Histórico">Sucursal Centro Histórico</option>
+                                <option value="Sucursal Polanco Luxury">Sucursal Polanco</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="admin-modal-footer">
+                    <button type="button" class="btn btn-secondary-admin" onclick="closeModal('modal-new-user')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary-admin">Crear y Habilitar Acceso</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts de la Aplicación de Administración -->
+    <script src="admin.js"></script>
+</body>
+</html>

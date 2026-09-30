@@ -1290,6 +1290,37 @@ function submitOrderToWhatsApp(event) {
     const waNumber = "525512345678";
     const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(msg)}`;
 
+    // Sincronizar pedido con el Panel Administrativo (ERP / Dashboard)
+    try {
+        const adminOrders = JSON.parse(localStorage.getItem('zonafutbol_admin_orders') || '[]');
+        const newOrderId = `ZF-${1050 + adminOrders.length}`;
+        AppState.cart.forEach((cItem, idx) => {
+            adminOrders.unshift({
+                id: idx === 0 ? newOrderId : `${newOrderId}-${idx + 1}`,
+                date: new Date().toISOString().replace('T', ' ').slice(0, 16),
+                timestamp: Date.now(),
+                client: name,
+                phone: phone.replace(/\D/g, '') || '525512345678',
+                city: city,
+                address: address,
+                branch: "Tienda Online",
+                productId: cItem.id,
+                productName: cItem.name,
+                size: cItem.size,
+                customName: cItem.customName || '',
+                customNumber: cItem.customNumber || '',
+                patch: cItem.patch || 'Sin parches adicionales',
+                mode: (cItem.customName && cItem.customNumber) ? 'full' : (cItem.customNumber ? 'number-only' : (cItem.customName ? 'name-only' : 'plain')),
+                price: cItem.price * cItem.quantity,
+                paymentMethod: paymentMethod,
+                status: (cItem.customName || cItem.customNumber) ? "En Taller" : "Pendiente"
+            });
+        });
+        localStorage.setItem('zonafutbol_admin_orders', JSON.stringify(adminOrders));
+    } catch (e) {
+        console.error('Error sincronizando orden con panel admin:', e);
+    }
+
     playStoreSound('cheer');
     launchConfettiCelebration();
     closeAllModals();
