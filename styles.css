@@ -76,6 +76,102 @@
 }
 
 /* ==========================================================================
+   MODO NOCHE DE ESTADIO (DARK MODE SYSTEM) & MONEDA
+   ========================================================================== */
+.currency-select-pill {
+    background: #f1f5f9;
+    color: #0f172a;
+    border: 1px solid #cbd5e1;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 800;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.currency-select-pill:hover, .currency-select-pill:focus {
+    border-color: #000000;
+    background: #ffffff;
+}
+
+body.dark-mode {
+    --bg-page: #080d1a;
+    --bg-surface: #0f172a;
+    --bg-surface-light: #1e293b;
+    --bg-alt-light: #0f172a;
+    --bg-card: #131c31;
+    --primary: #f8fafc;
+    --primary-light: #e2e8f0;
+    --text-dark: #f8fafc;
+    --text-muted-dark: #94a3b8;
+    --border-dark: #1e293b;
+    --border-light: #334155;
+    background-color: #080d1a !important;
+    color: #f8fafc !important;
+}
+
+body.dark-mode .main-header {
+    background: rgba(8, 13, 26, 0.95);
+    border-bottom-color: #1e293b;
+}
+
+body.dark-mode .brand-info h1 {
+    color: #ffffff;
+}
+
+body.dark-mode .nav-link {
+    color: #cbd5e1;
+}
+
+body.dark-mode .nav-link:hover, body.dark-mode .nav-link.active {
+    color: var(--accent);
+}
+
+body.dark-mode .product-card {
+    background: #131c31;
+    border-color: #1e293b;
+    color: #ffffff;
+}
+
+body.dark-mode .product-card:hover {
+    border-color: #00e676;
+    box-shadow: 0 0 0 2px #00e676, 0 10px 30px rgba(0, 230, 118, 0.2);
+}
+
+body.dark-mode .card-title, body.dark-mode .price-current {
+    color: #ffffff;
+}
+
+body.dark-mode .customizer-panel-card, 
+body.dark-mode .recommender-card, 
+body.dark-mode .comparison-box, 
+body.dark-mode .modal-card,
+body.dark-mode .catalog-toolbar {
+    background: #131c31;
+    border-color: #1e293b;
+    color: #ffffff;
+}
+
+body.dark-mode .search-input, body.dark-mode .custom-select, body.dark-mode .currency-select-pill {
+    background: #0f172a;
+    color: #ffffff;
+    border-color: #334155;
+}
+
+body.dark-mode .cart-slide-drawer, body.dark-mode .cart-summary-footer {
+    background: #0d1527;
+    border-color: #1e293b;
+    color: #ffffff;
+}
+
+body.dark-mode .cart-product-row {
+    background: #131c31;
+    border-color: #1e293b;
+}
+
+/* ==========================================================================
    RESET & CONFIGURACIÓN BASE
    ========================================================================== */
 *, *::before, *::after {
@@ -1003,9 +1099,9 @@ header.main-header {
 }
 
 .product-card:hover {
-    transform: translateY(-6px);
+    transform: none;
     border-color: #000000;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.09);
+    box-shadow: 0 0 0 2px #000000, 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
 /* Reflejo Holográfico (Panini / FUT Foil Glare) */
@@ -2607,12 +2703,19 @@ header.main-header {
 .qv-main-img-box {
     position: relative;
     width: 100%;
-    height: 340px;
+    height: 380px;
     border-radius: var(--radius-md);
     overflow: hidden;
     background: #f8fafc;
     border: 1px solid #e5e7eb;
-    cursor: crosshair;
+    cursor: zoom-in;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.qv-main-img-box.is-zooming {
+    cursor: zoom-out;
+    border-color: #000000;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 }
 
 .qv-main-img-box img {
@@ -2620,11 +2723,29 @@ header.main-header {
     height: 100%;
     object-fit: contain;
     padding: 14px;
-    transition: transform 0.2s ease-out;
+    transition: transform 0.12s ease-out;
+    display: block;
+    will-change: transform, transform-origin;
 }
 
-.qv-main-img-box:hover img {
-    transform: scale(1.6);
+.qv-main-img-box::after {
+    content: '🔍 Pasa el cursor para inspeccionar tejido';
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    background: rgba(0, 0, 0, 0.78);
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 800;
+    padding: 4px 12px;
+    border-radius: 999px;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 5;
+}
+
+.qv-main-img-box.is-zooming::after {
+    opacity: 0;
 }
 
 .qv-badge {

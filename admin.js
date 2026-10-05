@@ -39,7 +39,7 @@ const SEED_PRODUCTS = [
         category: "retro",
         league: "laliga",
         era: "2001/02",
-        price: 1499,
+        price: 1149,
         image: "imagenes/camisetas/real-madrid-retro.jpg",
         stock: { S: 1, M: 2, L: 4, XL: 2, XXL: 0 }
     },
@@ -49,8 +49,8 @@ const SEED_PRODUCTS = [
         category: "retro",
         league: "otras",
         era: "1981",
-        price: 1399,
-        image: "imagenes/camisetas/boca-juniors.jpg",
+        price: 1299,
+        image: "imagenes/camisetas/boca-1981.jpg",
         stock: { S: 2, M: 4, L: 5, XL: 2, XXL: 1 }
     },
     {
@@ -59,28 +59,28 @@ const SEED_PRODUCTS = [
         category: "retro",
         league: "selecciones",
         era: "1998",
-        price: 1499,
-        image: "imagenes/camisetas/mexico-retro.jpg",
+        price: 1399,
+        image: "imagenes/camisetas/mexico-1998.jpg",
         stock: { S: 2, M: 3, L: 3, XL: 2, XXL: 1 }
     },
     {
         id: "mcfc-2025",
-        name: "Manchester City 2024/2025 - Local Champions",
+        name: "Manchester City 2024/2025 - Local (0161)",
         category: "nuevas",
         league: "premier",
         era: "2024/25",
         price: 999,
-        image: "imagenes/camisetas/manchester-city.jpg",
+        image: "imagenes/camisetas/mancity-2025.jpg",
         stock: { S: 4, M: 8, L: 9, XL: 5, XXL: 2 }
     },
     {
-        id: "ars-2006",
-        name: "Arsenal 2005/2006 Retro - Highbury Farewell",
+        id: "ars-2004",
+        name: "Arsenal 2003/2004 Retro - 'The Invincibles'",
         category: "retro",
         league: "premier",
-        era: "2005/06",
-        price: 1399,
-        image: "imagenes/camisetas/arsenal-retro.jpg",
+        era: "2003/04",
+        price: 1249,
+        image: "imagenes/camisetas/arsenal-retro-2004.jpg",
         stock: { S: 1, M: 2, L: 2, XL: 1, XXL: 0 }
     },
     {
@@ -89,8 +89,8 @@ const SEED_PRODUCTS = [
         category: "retro",
         league: "seriea",
         era: "2006/07",
-        price: 1399,
-        image: "imagenes/camisetas/ac-milan.jpg",
+        price: 1099,
+        image: "imagenes/camisetas/milan.jpg",
         stock: { S: 2, M: 4, L: 4, XL: 2, XXL: 1 }
     },
     {
@@ -99,38 +99,38 @@ const SEED_PRODUCTS = [
         category: "retro",
         league: "selecciones",
         era: "1986",
-        price: 1599,
-        image: "imagenes/camisetas/argentina-retro.jpg",
+        price: 1499,
+        image: "imagenes/camisetas/argentina-1986.jpg",
         stock: { S: 1, M: 1, L: 2, XL: 1, XXL: 0 }
     },
     {
-        id: "liv-2025",
-        name: "Liverpool FC 2024/2025 - Local",
-        category: "nuevas",
-        league: "premier",
-        era: "2024/25",
-        price: 999,
-        image: "imagenes/camisetas/liverpool.jpg",
+        id: "bra-2002",
+        name: "Brasil 2002 Retro - Pentacampeón Ronaldo R9",
+        category: "retro",
+        league: "selecciones",
+        era: "2002",
+        price: 1399,
+        image: "imagenes/camisetas/brazil-2002.jpg",
         stock: { S: 3, M: 6, L: 7, XL: 3, XXL: 2 }
     },
     {
-        id: "fra-1998",
-        name: "Selección Francia 1998 Retro - Zidane Campeón",
-        category: "retro",
-        league: "selecciones",
-        era: "1998",
-        price: 1399,
-        image: "imagenes/camisetas/francia-retro.jpg",
-        stock: { S: 0, M: 0, L: 0, XL: 0, XXL: 0 } // Agotado para probar alerta
-    },
-    {
-        id: "bay-2025",
-        name: "Bayern Múnich 2024/2025 - Local Triple Red",
+        id: "psg-2025",
+        name: "Paris Saint-Germain 2024/2025 - Local",
         category: "nuevas",
-        league: "otras",
+        league: "ligue1",
         era: "2024/25",
         price: 999,
-        image: "imagenes/camisetas/bayern-munich.jpg",
+        image: "imagenes/camisetas/psg.jpg",
+        stock: { S: 2, M: 4, L: 5, XL: 3, XXL: 1 }
+    },
+    {
+        id: "inter-2025",
+        name: "Inter de Milán 2024/2025 - Segunda Estrella",
+        category: "nuevas",
+        league: "seriea",
+        era: "2024/25",
+        price: 999,
+        image: "imagenes/camisetas/inter-2025.jpg",
         stock: { S: 2, M: 5, L: 6, XL: 3, XXL: 1 }
     }
 ];
@@ -194,7 +194,7 @@ const SEED_USERS = [
         branch: "Sucursal Estadio Azteca",
         lastLogin: "Ayer, 07:10 PM",
         status: "Activo",
-        avatar: "imagenes/camisetas/mexico-retro.jpg",
+        avatar: "imagenes/camisetas/mexico-1998.jpg",
         permissions: [
             "Supervisión de Sucursal Estadio",
             "Control de Caja Diaria",
@@ -499,10 +499,49 @@ const AdminState = {
 
 // Inicialización de la Aplicación
 document.addEventListener('DOMContentLoaded', () => {
+    checkAdminAuthGuard();
     initAdminData();
     initUI();
     renderAllViews();
 });
+
+function checkAdminAuthGuard() {
+    const token = sessionStorage.getItem('zonafutbol_admin_token');
+    const authOverlay = document.getElementById('admin-auth-barrier');
+
+    if (token !== 'AUTH_TOKEN_ZONE_2026') {
+        if (authOverlay) {
+            authOverlay.style.display = 'flex';
+        }
+        return false;
+    } else {
+        if (authOverlay) {
+            authOverlay.style.display = 'none';
+        }
+        return true;
+    }
+}
+
+function handleAdminBarrierLoginSubmit(e) {
+    if (e) e.preventDefault();
+    const user = document.getElementById('barrier-user-input')?.value.trim();
+    const pass = document.getElementById('barrier-pass-input')?.value.trim();
+
+    if ((user === 'admin@zonafutbol.com' || user === 'admin') && pass === 'admin2026') {
+        sessionStorage.setItem('zonafutbol_admin_token', 'AUTH_TOKEN_ZONE_2026');
+        sessionStorage.setItem('zonafutbol_admin_user', JSON.stringify({ name: 'Carlos Mendoza', role: 'ADMIN' }));
+        checkAdminAuthGuard();
+        showToast('🔓 ¡Acceso concedido al Sistema ERP de Zona Fútbol!');
+    } else {
+        showToast('⚠️ Credenciales incorrectas. Prueba: admin@zonafutbol.com / admin2026');
+    }
+}
+
+function logoutAdminSession() {
+    sessionStorage.removeItem('zonafutbol_admin_token');
+    sessionStorage.removeItem('zonafutbol_admin_user');
+    window.location.href = 'index.html';
+}
 
 function initAdminData() {
     // 1. Productos / Inventario

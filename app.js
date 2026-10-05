@@ -399,6 +399,23 @@ const PRODUCTS = [
     }
 ];
 
+// Configuración Multimoneda Dinámica
+const CURRENCIES = {
+    MXN: { symbol: '$', rate: 1.0, suffix: 'MXN', name: 'Pesos Mexicanos' },
+    USD: { symbol: '$', rate: 0.054, suffix: 'USD', name: 'Dólares (USD)' },
+    EUR: { symbol: '€', rate: 0.049, suffix: 'EUR', name: 'Euros (EUR)' },
+    GBP: { symbol: '£', rate: 0.042, suffix: 'GBP', name: 'Libras Esterlinas (£)' },
+    ARS: { symbol: '$', rate: 52.0, suffix: 'ARS', name: 'Pesos Argentinos' },
+    COP: { symbol: '$', rate: 215.0, suffix: 'COP', name: 'Pesos Colombianos' }
+};
+
+function formatMoney(amountInMXN) {
+    const code = AppState.currentCurrency || 'MXN';
+    const cur = CURRENCIES[code] || CURRENCIES.MXN;
+    const converted = Math.round(amountInMXN * cur.rate);
+    return `${cur.symbol}${converted.toLocaleString()} ${cur.suffix}`;
+}
+
 // Estado global de la tienda
 const AppState = {
     cart: JSON.parse(localStorage.getItem('zonafutbol_cart') || '[]'),
@@ -409,6 +426,7 @@ const AppState = {
     sortBy: 'destacados',
     appliedCoupon: null,
     discountPercentage: 0,
+    currentCurrency: localStorage.getItem('zonafutbol_currency') || 'MXN',
     soundEnabled: localStorage.getItem('zonafutbol_sound') !== 'false'
 };
 
@@ -431,13 +449,59 @@ const SOCIAL_SALES_FEED = [
 ];
 
 // ==========================================
-// INICIALIZACIÓN
+// INICIALIZACIÓN DE TEMA & MONEDA
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
     initApp();
 });
 
+function initThemeMode() {
+    const savedTheme = localStorage.getItem('zonafutbol_theme') || 'light';
+    const icon = document.getElementById('theme-toggle-icon');
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+        if (icon) icon.textContent = '☀️';
+    } else {
+        document.body.classList.remove('dark-mode');
+        if (icon) icon.textContent = '🌙';
+    }
+}
+
+function toggleThemeMode() {
+    const isDark = document.body.classList.toggle('dark-mode');
+    localStorage.setItem('zonafutbol_theme', isDark ? 'dark' : 'light');
+
+    const icon = document.getElementById('theme-toggle-icon');
+    if (icon) {
+        icon.textContent = isDark ? '☀️' : '🌙';
+    }
+
+    playStoreSound('click');
+    showToast(isDark ? '🌙 Modo Noche Estadio Activado' : '☀️ Modo Día Activado');
+}
+
+function syncCurrencySelectUI() {
+    const select = document.getElementById('currency-select');
+    if (select) {
+        select.value = AppState.currentCurrency;
+    }
+}
+
+function changeStoreCurrency(newCurrency) {
+    if (!CURRENCIES[newCurrency]) return;
+    AppState.currentCurrency = newCurrency;
+    localStorage.setItem('zonafutbol_currency', newCurrency);
+
+    renderProducts();
+    updateCartUI();
+    setupCustomizerLivePreview();
+    playStoreSound('click');
+    showToast(`💱 Moneda cambiada a ${CURRENCIES[newCurrency].name}`);
+}
+
 function initApp() {
+    initThemeMode();
+    syncCurrencySelectUI();
     renderProducts();
     updateCartUI();
     updateFavoritesBadge();
@@ -445,7 +509,6 @@ function initApp() {
     setupCustomizerLivePreview();
     setupCustomizer3D();
     initCountdownTimer();
-    // Notificaciones de ventas en vivo desactivadas
     initHeroParticles();
     initThreeJSArena();
     updateSoundIcon();
@@ -943,8 +1006,8 @@ function renderProducts() {
 
                     <div class="card-price-bottom">
                         <div class="price-flex-row">
-                            <span class="price-current">$${product.price.toLocaleString()} MXN</span>
-                            <span class="price-old">$${product.originalPrice.toLocaleString()} MXN</span>
+                            <span class="price-current">${formatMoney(product.price)}</span>
+                            <span class="price-old">${formatMoney(product.originalPrice)}</span>
                             <span class="discount-tag">-${discountPercent}%</span>
                         </div>
                     </div>
@@ -979,30 +1042,10 @@ function toggleCardFlip(productId) {
     }
 }
 
-// Efecto Parallax Tilt 3D y Reflejo Holográfico con el cursor
+// Efecto de contorno iluminado en tarjetas
 function attachCardTiltAndGlareParallax() {
     const cards = document.querySelectorAll('.product-card');
     cards.forEach(card => {
-        const id = card.dataset.id;
-        const glare = document.getElementById(`glare-${id}`);
-
-        card.addEventListener('mousemove', (e) => {
-            const rect = card.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
-            const rotateX = ((y - centerY) / centerY) * -6;
-            const rotateY = ((x - centerX) / centerX) * 6;
-
-            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-8px)`;
-
-            if (glare) {
-                const angle = Math.atan2(y - centerY, x - centerX) * (180 / Math.PI) + 90;
-                glare.style.background = `linear-gradient(${angle}deg, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0) 60%, rgba(0, 230, 118, 0.2) 100%)`;
-            }
-        });
-
         card.addEventListener('mouseleave', () => {
             card.style.transform = '';
         });
@@ -1174,21 +1217,21 @@ function updateCartUI() {
                         <span class="qty-display-number">${item.quantity}</span>
                         <button class="qty-adjust-btn" onclick="updateCartQuantity('${item.cartKey}', 1)">+</button>
                     </div>
-                    <span class="cart-item-subtotal-price">$${(item.price * item.quantity).toLocaleString()} MXN</span>
+                    <span class="cart-item-subtotal-price">${formatMoney(item.price * item.quantity)}</span>
                 </div>
             </div>
         </div>
     `).join('');
 
-    document.getElementById('cart-subtotal').textContent = `$${totals.subtotal.toLocaleString()} MXN`;
-    document.getElementById('cart-shipping').textContent = totals.shipping === 0 ? '¡GRATIS!' : `$${totals.shipping} MXN`;
-    document.getElementById('cart-total').textContent = `$${totals.total.toLocaleString()} MXN`;
+    document.getElementById('cart-subtotal').textContent = formatMoney(totals.subtotal);
+    document.getElementById('cart-shipping').textContent = totals.shipping === 0 ? '¡GRATIS!' : formatMoney(totals.shipping);
+    document.getElementById('cart-total').textContent = formatMoney(totals.total);
 
     const discountRow = document.getElementById('cart-discount-row');
     if (discountRow) {
         if (totals.discountAmount > 0) {
             discountRow.style.display = 'flex';
-            document.getElementById('cart-discount').textContent = `-$${totals.discountAmount.toLocaleString()} MXN`;
+            document.getElementById('cart-discount').textContent = `-${formatMoney(totals.discountAmount)}`;
         } else {
             discountRow.style.display = 'none';
         }
@@ -1202,7 +1245,7 @@ function updateCartUI() {
         if (totals.freeShippingRemaining <= 0) {
             shippingText.innerHTML = `🎉 <strong>¡Felicidades! Tienes ENVÍO GRATIS garantizado</strong>`;
         } else {
-            shippingText.innerHTML = `Te faltan <strong>$${totals.freeShippingRemaining.toLocaleString()} MXN</strong> para <strong>Envío Gratis</strong>`;
+            shippingText.innerHTML = `Te faltan <strong>${formatMoney(totals.freeShippingRemaining)}</strong> para <strong>Envío Gratis</strong>`;
         }
     }
 }
@@ -1223,6 +1266,22 @@ function applyCoupon() {
     } else {
         showToast('Cupón no válido. Prueba: ZONAFUTBOL10 o GOLAZO15', 'error');
     }
+}
+
+// Cupón relámpago de barra superior (Top Ticker)
+function applySpecialPenaltyCoupon() {
+    const couponCode = 'RETRO2026';
+    AppState.appliedCoupon = couponCode;
+    AppState.discountPercentage = COUPONS[couponCode] || 0.15;
+
+    const input = document.getElementById('coupon-input');
+    if (input) input.value = couponCode;
+
+    updateCartUI();
+    openCartDrawer();
+    launchConfettiCelebration();
+    playStoreSound('cheer');
+    showToast('🎉 ¡Cupón RETRO2026 activado! Tienes 15% de descuento en tu pedido.');
 }
 
 // ==========================================
@@ -1504,19 +1563,19 @@ function updateCustomizerPreview() {
 
     // Cálculo de suplementos y desglose
     let custFee = 0;
-    let feeLabel = '+$0 MXN (Lisa)';
+    let feeLabel = `+${formatMoney(0)} (Lisa)`;
     if (!isNoName && !isNoNumber) {
         custFee = 120;
-        feeLabel = '+$120 MXN (Completo)';
+        feeLabel = `+${formatMoney(120)} (Completo)`;
     } else if (!isNoName && isNoNumber) {
         custFee = 70;
-        feeLabel = '+$70 MXN (Solo Nombre)';
+        feeLabel = `+${formatMoney(70)} (Solo Nombre)`;
     } else if (isNoName && !isNoNumber) {
         custFee = 70;
-        feeLabel = '+$70 MXN (Solo Dorsal)';
+        feeLabel = `+${formatMoney(70)} (Solo Dorsal)`;
     } else {
         custFee = 0;
-        feeLabel = '+$0 MXN (Sin estampado)';
+        feeLabel = `+${formatMoney(0)} (Sin estampado)`;
     }
 
     let patchFee = 0;
@@ -1532,27 +1591,27 @@ function updateCustomizerPreview() {
 
     const totalJerseyPrice = product.price + custFee + patchFee;
 
-    if (basePriceEl) basePriceEl.textContent = `$${product.price.toLocaleString()} MXN`;
+    if (basePriceEl) basePriceEl.textContent = formatMoney(product.price);
     if (feeDisplayEl) feeDisplayEl.textContent = feeLabel;
     if (patchRowEl) {
         if (patchFee > 0) {
             patchRowEl.style.display = 'flex';
-            if (patchFeeEl) patchFeeEl.textContent = `+$${patchFee} MXN`;
+            if (patchFeeEl) patchFeeEl.textContent = `+${formatMoney(patchFee)}`;
         } else {
             patchRowEl.style.display = 'none';
         }
     }
-    if (totalPriceEl) totalPriceEl.textContent = `$${totalJerseyPrice.toLocaleString()} MXN`;
+    if (totalPriceEl) totalPriceEl.textContent = formatMoney(totalJerseyPrice);
 
     if (btnTextEl) {
         if (isNoName && isNoNumber) {
-            btnTextEl.textContent = `Agregar Camiseta Lisa al Carrito ($${totalJerseyPrice.toLocaleString()} MXN)`;
+            btnTextEl.textContent = `Agregar Camiseta Lisa al Carrito (${formatMoney(totalJerseyPrice)})`;
         } else if (!isNoName && isNoNumber) {
-            btnTextEl.textContent = `Agregar Camiseta (Solo Nombre) ($${totalJerseyPrice.toLocaleString()} MXN)`;
+            btnTextEl.textContent = `Agregar Camiseta (Solo Nombre) (${formatMoney(totalJerseyPrice)})`;
         } else if (isNoName && !isNoNumber) {
-            btnTextEl.textContent = `Agregar Camiseta (Solo Dorsal) ($${totalJerseyPrice.toLocaleString()} MXN)`;
+            btnTextEl.textContent = `Agregar Camiseta (Solo Dorsal) (${formatMoney(totalJerseyPrice)})`;
         } else {
-            btnTextEl.textContent = `Agregar Camiseta Personalizada ($${totalJerseyPrice.toLocaleString()} MXN)`;
+            btnTextEl.textContent = `Agregar Camiseta Personalizada (${formatMoney(totalJerseyPrice)})`;
         }
     }
 }
@@ -1566,7 +1625,7 @@ function setupCustomizerLivePreview() {
     if (!jerseySelect || !nameInput || !numberInput) return;
 
     jerseySelect.innerHTML = PRODUCTS.map(p => `
-        <option value="${p.id}">${p.name} - $${p.price.toLocaleString()} MXN (${p.isRetro ? 'Retro' : 'Nueva'})</option>
+        <option value="${p.id}">${p.name} - ${formatMoney(p.price)} (${p.isRetro ? 'Retro' : 'Nueva'})</option>
     `).join('');
 
     jerseySelect.addEventListener('change', updateCustomizerPreview);
@@ -1683,8 +1742,8 @@ function openQuickView(productId) {
                 <h2 class="qv-title">${product.name}</h2>
 
                 <div class="qv-pricing">
-                    <span class="qv-current-price">$${product.price.toLocaleString()} MXN</span>
-                    <span class="qv-old-price">$${product.originalPrice.toLocaleString()} MXN</span>
+                    <span class="qv-current-price">${formatMoney(product.price)}</span>
+                    <span class="qv-old-price">${formatMoney(product.originalPrice)}</span>
                     <span class="discount-badge">-${discountPercent}% AHORRO</span>
                 </div>
 
@@ -1738,11 +1797,41 @@ function openQuickView(productId) {
 
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
+    setupMercadoLibreZoom();
+}
+
+function setupMercadoLibreZoom() {
+    const box = document.getElementById('qv-zoom-box');
+    const img = document.getElementById('qv-hero-img');
+    if (!box || !img) return;
+
+    box.addEventListener('mousemove', (e) => {
+        const rect = box.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        const xPercent = Math.max(0, Math.min(100, (x / rect.width) * 100));
+        const yPercent = Math.max(0, Math.min(100, (y / rect.height) * 100));
+
+        img.style.transformOrigin = `${xPercent}% ${yPercent}%`;
+        img.style.transform = 'scale(2.5)';
+        box.classList.add('is-zooming');
+    });
+
+    box.addEventListener('mouseleave', () => {
+        img.style.transform = 'scale(1)';
+        img.style.transformOrigin = 'center center';
+        box.classList.remove('is-zooming');
+    });
 }
 
 function changeQvImage(url, thumbBtn) {
     const mainImg = document.getElementById('qv-hero-img');
-    if (mainImg) mainImg.src = url;
+    if (mainImg) {
+        mainImg.src = url;
+        mainImg.style.transform = 'scale(1)';
+        mainImg.style.transformOrigin = 'center center';
+    }
     document.querySelectorAll('.qv-thumb').forEach(t => t.classList.remove('active'));
     thumbBtn.classList.add('active');
 }
@@ -2551,3 +2640,41 @@ function toggleJerseyFrontBack() {
         }
     }, 450);
 }
+
+// ==========================================================================
+// SEGURIDAD & AUTENTICACIÓN CORPORATIVA (PANEL ADMIN)
+// ==========================================================================
+function openAdminLoginModal() {
+    const modal = document.getElementById('modal-admin-login');
+    if (modal) {
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function handleAdminLoginSubmit(e) {
+    if (e) e.preventDefault();
+    const user = document.getElementById('admin-login-user')?.value.trim();
+    const pass = document.getElementById('admin-login-pass')?.value.trim();
+
+    if ((user === 'admin@zonafutbol.com' || user === 'admin') && pass === 'admin2026') {
+        sessionStorage.setItem('zonafutbol_admin_token', 'AUTH_TOKEN_ZONE_2026');
+        sessionStorage.setItem('zonafutbol_admin_user', JSON.stringify({ name: 'Carlos Mendoza', role: 'ADMIN' }));
+        closeAllModals();
+        playStoreSound('cheer');
+        showToast('🔓 ¡Autenticación exitosa! Abriendo Panel de Control ERP...');
+        setTimeout(() => {
+            window.location.href = 'admin.html';
+        }, 500);
+    } else {
+        showToast('⚠️ Credenciales incorrectas. Verifica tu usuario y contraseña.', 'error');
+    }
+}
+
+// Shortcut secreto: Ctrl + Shift + A abre el modal de administración
+document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
+        e.preventDefault();
+        openAdminLoginModal();
+    }
+});

@@ -65,19 +65,20 @@
 
             <!-- Acciones de Cabecera -->
             <div class="header-actions">
-                <!-- Enlace al Panel Administrativo (ERP / Dashboard) -->
-                <a href="admin.html" class="admin-access-pill" target="_blank" title="Abrir Panel Administrativo (Inventario, Ventas, Roles)">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="3" y="3" width="7" height="9"></rect>
-                        <rect x="14" y="3" width="7" height="5"></rect>
-                        <rect x="14" y="12" width="7" height="9"></rect>
-                        <rect x="3" y="16" width="7" height="5"></rect>
-                    </svg>
-                    <span>Panel Admin</span>
-                </a>
+                <!-- Selector Multimoneda Dinámico -->
+                <select id="currency-select" class="currency-select-pill" onchange="changeStoreCurrency(this.value)" title="Cambiar Moneda">
+                    <option value="MXN">🇲🇽 MXN ($)</option>
+                    <option value="USD">🇺🇸 USD ($)</option>
+                    <option value="EUR">🇪🇺 EUR (€)</option>
+                    <option value="GBP">🇬🇧 GBP (£)</option>
+                    <option value="ARS">🇦🇷 ARS ($)</option>
+                    <option value="COP">🇨🇴 COP ($)</option>
+                </select>
 
-                <!-- Selector Moneda -->
-                <span class="currency-tag">MXN ($)</span>
+                <!-- Botón Toggle Modo Noche/Día Estadio -->
+                <button class="icon-action-btn" id="theme-toggle-btn" onclick="toggleThemeMode()" title="Tema Noche/Día Estadio" aria-label="Tema">
+                    <span id="theme-toggle-icon" style="font-size: 1.1rem;">🌙</span>
+                </button>
 
                 <!-- Botón Búsqueda Rápida -->
                 <button class="icon-action-btn" onclick="document.getElementById('search-input')?.focus(); location.href='#catalogo';" title="Buscar en catálogo" aria-label="Buscar">
@@ -1009,7 +1010,7 @@
                         <li><a href="#personalizador">Personalizador de Jerseys</a></li>
                         <li><a href="#guia-tallas">Guía de Medidas</a></li>
                         <li><a href="#faq">Preguntas Frecuentes</a></li>
-                        <li><a href="admin.html" target="_blank" style="color: #ffd700; font-weight: 700;">🔐 Panel Administrativo</a></li>
+                        <li><a href="javascript:void(0)" onclick="openAdminLoginModal()" style="color: #64748b; font-size: 0.8rem; opacity: 0.7;">🔐 Acceso Corporativo (Personal)</a></li>
                     </ul>
                 </div>
 
@@ -1206,6 +1207,42 @@
     </div>
 
 
+
+    <!-- ======================================================================= -->
+    <!-- MODAL AUTENTICACIÓN / LOGIN DE ADMINISTRACIÓN (SEGURIDAD) -->
+    <!-- ======================================================================= -->
+    <div id="modal-admin-login" class="modal-wrapper" onclick="if(event.target === this) closeAllModals();">
+        <div class="modal-card" style="max-width: 440px; padding: 32px; border-top: 4px solid var(--accent);">
+            <button class="modal-close-corner" onclick="closeAllModals()">&times;</button>
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div style="display: inline-flex; align-items: center; justify-content: center; width: 56px; height: 56px; background: #000; color: #ffd700; border-radius: 50%; font-size: 1.6rem; margin-bottom: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.15);">
+                    🔐
+                </div>
+                <h3 style="font-family: var(--font-heading); font-size: 1.4rem; color: var(--primary); margin-bottom: 4px;">Control Corporativo ERP</h3>
+                <p style="font-size: 0.84rem; color: var(--text-muted-dark);">Acceso exclusivo para administradores y personal autorizado.</p>
+            </div>
+
+            <form onsubmit="handleAdminLoginSubmit(event)">
+                <div class="form-field-group">
+                    <label for="admin-login-user" style="color: var(--text-dark); font-weight: 700;">Usuario o Email:</label>
+                    <input type="text" id="admin-login-user" class="search-input" placeholder="admin@zonafutbol.com" required autocomplete="username">
+                </div>
+                <div class="form-field-group">
+                    <label for="admin-login-pass" style="color: var(--text-dark); font-weight: 700;">Contraseña de Acceso:</label>
+                    <input type="password" id="admin-login-pass" class="search-input" placeholder="••••••••" required autocomplete="current-password">
+                </div>
+
+                <div style="background: #f8fafc; border: 1px dashed var(--border-light); padding: 10px 14px; border-radius: var(--radius-sm); margin: 16px 0; font-size: 0.78rem; color: #475569;">
+                    💡 <strong>Credenciales Oficiales de Demostración:</strong><br>
+                    Usuario: <code>admin@zonafutbol.com</code> | Clave: <code>admin2026</code>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; font-weight: 800; font-size: 0.95rem;">
+                    Iniciar Sesión de Administrador
+                </button>
+            </form>
+        </div>
+    </div>
 
     <!-- ======================================================================= -->
     <!-- BOTÓN FLOTANTE WHATSAPP CON RADAR RIPPLE -->
